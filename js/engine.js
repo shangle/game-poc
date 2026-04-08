@@ -142,6 +142,10 @@ function startGameEngine() {
     else { try { container.requestPointerLock(); } catch(e) {} }
     
     document.getElementById('btn-pause').style.display = 'block';
+    
+    // START AUDIO
+    AudioEngine.startMusic();
+    
     if (!animationFrameId) gameLoop();
 }
 
@@ -150,6 +154,9 @@ function stopGame() {
     document.getElementById('game-container').style.display = 'none';
     document.getElementById('btn-pause').style.display = 'none';
     document.getElementById('mobile-controls').style.display = 'none';
+    
+    // STOP AUDIO
+    AudioEngine.stopMusic();
     
     if (document.pointerLockElement) document.exitPointerLock();
     if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
@@ -218,6 +225,9 @@ function shoot() {
     w.classList.add('firing'); f.style.background = 'rgba(255,255,0,0.3)'; f.style.display = 'block';
     setTimeout(() => { w.classList.remove('firing'); f.style.display = 'none'; }, 100);
 
+    // PLAY SHOOT SOUND
+    AudioEngine.playSFX('shoot');
+
     raycaster.setFromCamera(new THREE.Vector2(0,0), camera); 
     const targets = enemies.filter(e => e.active).map(e => e.mesh);
     const intersects = raycaster.intersectObjects(targets);
@@ -226,7 +236,10 @@ function shoot() {
         const obj = enemies.find(e => e.mesh === intersects[0].object);
         if(obj) {
             obj.hp -= 50;
-            if(obj.hp <= 0) { obj.active = false; scene.remove(obj.mesh); playerStats.score += 50; updateHUD(); }
+            if(obj.hp <= 0) { 
+                obj.active = false; scene.remove(obj.mesh); playerStats.score += 50; updateHUD(); 
+                AudioEngine.playSFX('hit'); // Enemy killed sound
+            }
         }
     }
 }
@@ -263,6 +276,9 @@ function gameLoop() {
             if(item.type === 'hp') playerStats.hp = Math.min(100, playerStats.hp + item.value);
             if(item.type === 'score') playerStats.score += item.value;
             updateHUD();
+            
+            AudioEngine.playSFX('collect'); // Collect sound
+            
             const f = document.getElementById('flash'); f.style.background = 'rgba(0,255,0,0.3)'; f.style.display = 'block';
             setTimeout(() => { f.style.display = 'none'; }, 100);
         }
@@ -275,6 +291,9 @@ function gameLoop() {
         document.getElementById('win-screen').style.display = 'flex';
         document.getElementById('btn-pause').style.display = 'none';
         document.getElementById('mobile-controls').style.display = 'none';
+        
+        AudioEngine.playSFX('win');
+        AudioEngine.stopMusic();
     }
 
     // Enemy AI Check
@@ -288,6 +307,8 @@ function gameLoop() {
             if(!checkCollision(nx, nz, 2)) { e.mesh.position.x = nx; e.mesh.position.z = nz; }
         } else if(Math.random() < 0.05) { 
             playerStats.hp -= 10; updateHUD();
+            AudioEngine.playSFX('hit'); // Damage sound
+
             const f = document.getElementById('flash'); f.style.background = 'rgba(255,0,0,0.5)'; f.style.display = 'block';
             setTimeout(() => { f.style.display = 'none'; }, 100);
             if(playerStats.hp <= 0) {
@@ -295,6 +316,9 @@ function gameLoop() {
                 document.getElementById('death-screen').style.display = 'flex';
                 document.getElementById('btn-pause').style.display = 'none';
                 document.getElementById('mobile-controls').style.display = 'none';
+                
+                AudioEngine.playSFX('death');
+                AudioEngine.stopMusic();
             }
         }
     });

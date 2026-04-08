@@ -1,82 +1,103 @@
 /**
- * UI CONTROLLERS
+ * UI & LEVEL EDITOR CONTROLLER
  */
-function switchTab(tabId) {
-    document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.classList.add('text-gray-400'); });
-    document.querySelectorAll('[id^="content-"]').forEach(c => c.classList.add('hidden'));
-    document.getElementById('tab-'+tabId).classList.add('active');
-    document.getElementById('tab-'+tabId).classList.remove('text-gray-400');
-    document.getElementById('content-'+tabId).classList.remove('hidden');
+
+let activeLibTab = 'entities'; // 'entities' or 'tiles'
+let activeAssetId = 1; // Currently selected brush
+let inspectorTargetId = null; // The ID of the asset being edited in inspector
+
+function openEditor() {
+    initDemoMap();
+    document.getElementById('boot-screen').style.display = 'none';
+    document.getElementById('editor-sidebar').classList.remove('hidden');
+    renderUI();
+}
+
+function renderUI() {
+    renderLibrary();
+    renderGrid();
+    document.getElementById('game-title-display').innerText = gameData.title;
 }
 
 function setLayer(layer) {
     activeLayer = layer;
-    document.querySelectorAll('[id^="btn-layer-"]').forEach(b => {
-        b.classList.remove('bg-blue-600', 'text-white');
-        b.classList.add('bg-gray-700', 'text-gray-300');
-    });
-    const activeBtn = document.getElementById('btn-layer-'+layer);
-    activeBtn.classList.remove('bg-gray-700', 'text-gray-300');
-    activeBtn.classList.add('bg-blue-600', 'text-white');
+    document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('btn-layer-' + layer).classList.add('active');
     
     document.getElementById('grid-label').innerText = "Painting: " + layer.charAt(0).toUpperCase() + layer.slice(1);
     
-    // Set default paint brush based on layer
-    if(layer === 'floors' && gameData.palette.floors.length) setPaint(gameData.palette.floors[0].id);
-    else if(layer === 'ceils' && gameData.palette.ceils.length) setPaint(gameData.palette.ceils[0].id);
-    else if(layer === 'entities' && gameData.palette.walls.length) setPaint(gameData.palette.walls[0].id);
-    else setPaint(ID_EMPTY);
+    // Auto-switch library tab based on layer
+    if (layer === 'entities') switchLibTab('entities');
+    else switchLibTab('tiles');
 
-    renderPalette();
     renderGrid();
 }
 
-function setPaint(id) { currentPaintId = id; renderPalette(); }
+function switchLibTab(tab) {
+    activeLibTab = tab;
+    document.querySelectorAll('.lib-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(tab === 'entities' ? 'tab-ent' : 'tab-tile').classList.add('active');
+    
+    // Set default asset for that tab if current one isn't in it
+    if (tab === 'entities') {
+        if (!gameData.palette.walls.find(i=>i.id === activeAssetId) && 
+            !gameData.palette.enemies.find(i=>i.id === activeAssetId) &&
+            activeAssetId !== ID_PLAYER && activeAssetId !== ID_GOAL) {
+            activeAssetId = gameData.palette.walls[0].id;
+        }
+    } else {
+        const cat = activeLayer === 'floors' ? 'floors' : 'ceils';
+        if (!gameData.palette[cat].find(i=>i.id === activeAssetId)) {
+            activeAssetId = gameData.palette[cat][0].id;
+        }
+    }
 
-function renderPalette() {
-    let html = `<div class="palette-item p-1 px-2 rounded flex items-center gap-2 ${currentPaintId===ID_EMPTY?'selected':''}" onclick="setPaint(${ID_EMPTY})">
-        <div class="w-4 h-4 bg-gray-900 border border-gray-600"></div><span class="text-xs">Erase</span>
-    </div>`;
+    renderLibrary();
+}
 
-    if(activeLayer === 'entities') {
-        html += `<div class="palette-item p-1 px-2 rounded flex items-center gap-2 ${currentPaintId===ID_PLAYER?'selected':''}" onclick="setPaint(${ID_PLAYER})">
-            <div class="w-4 h-4 bg-blue-500 rounded-full border border-white"></div><span class="text-xs font-bold text-blue-400">P. Start</span>
-        </div>`;
-        html += `<div class="palette-item p-1 px-2 rounded flex items-center gap-2 ${currentPaintId===ID_GOAL?'selected':''}" onclick="setPaint(${ID_GOAL})">
-            <div class="w-4 h-4 bg-green-500 border border-white"></div><span class="text-xs font-bold text-green-400">Exit Goal</span>
-        </div>`;
+function renderLibrary() {
+    const container = document.getElementById('library-content');
+    container.innerHTML = '';
+
+    const createCard = (id, name, texKey, color, isSystem = false) => {
+        const card = document.createElement('div');
+        card.className = `asset-card ${activeAssetId === id ? 'selected' : ''}`;
+        if (isSystem) card.style.backgroundColor = '#1e3a8a';
         
-        const renderGroup = (arr, isCircle) => {
-            arr.forEach(i => {
-                html += `<div class="palette-item p-1 px-2 rounded flex items-center gap-2 ${currentPaintId===i.id?'selected':''}" onclick="setPaint(${i.id})">
-                    <div class="w-4 h-4 ${isCircle?'rounded-full':''}" style="background-color: ${i.color}"></div><span class="text-xs">${i.name}</span>
-                </div>`;
-            });
-        };
-        renderGroup(gameData.palette.walls, false);
-        renderGroup(gameData.palette.enemies, true);
-        renderGroup(gameData.palette.objects, true);
-        renderGroup(gameData.palette.items, true);
-        document.getElementById('palette-title').innerText = "Palette (Entities & Logic)";
-    } 
-    else if (activeLayer === 'floors') {
-        gameData.palette.floors.forEach(i => {
-            html += `<div class="palette-item p-1 px-2 rounded flex items-center gap-2 ${currentPaintId===i.id?'selected':''}" onclick="setPaint(${i.id})">
-                <div class="w-4 h-4 border border-gray-500" style="background-color: ${i.color}"></div><span class="text-xs">${i.name}</span>
-            </div>`;
-        });
-        document.getElementById('palette-title').innerText = "Palette (Floor Textures)";
-    }
-    else if (activeLayer === 'ceils') {
-        gameData.palette.ceils.forEach(i => {
-            html += `<div class="palette-item p-1 px-2 rounded flex items-center gap-2 ${currentPaintId===i.id?'selected':''}" onclick="setPaint(${i.id})">
-                <div class="w-4 h-4 border border-gray-500" style="background-color: ${i.color}"></div><span class="text-xs">${i.name}</span>
-            </div>`;
-        });
-        document.getElementById('palette-title').innerText = "Palette (Ceiling Textures)";
-    }
+        const preview = document.createElement('div');
+        preview.className = 'asset-preview';
+        const img = resolveAsset(texKey);
+        preview.style.backgroundImage = `url(${img})`;
+        if (!img) preview.style.backgroundColor = color || '#334155';
 
-    document.getElementById('palette-container').innerHTML = html;
+        const label = document.createElement('div');
+        label.className = 'asset-name';
+        label.innerText = name;
+
+        card.appendChild(preview);
+        card.appendChild(label);
+        
+        card.onclick = () => { activeAssetId = id; renderLibrary(); };
+        card.oncontextmenu = (e) => { e.preventDefault(); openInspector(id); };
+        
+        container.appendChild(card);
+    };
+
+    // Erase tool first
+    createCard(ID_EMPTY, "ERASER", "none", "#000", true);
+
+    if (activeLibTab === 'entities') {
+        createCard(ID_PLAYER, "PLAYER START", "none", "#3b82f6", true);
+        createCard(ID_GOAL, "EXIT GOAL", "goal", "#22c55e", true);
+        
+        gameData.palette.walls.forEach(i => createCard(i.id, i.name, i.tex, i.color));
+        gameData.palette.enemies.forEach(i => createCard(i.id, i.name, i.tex, i.color));
+        gameData.palette.objects.forEach(i => createCard(i.id, i.name, i.tex, i.color));
+        gameData.palette.items.forEach(i => createCard(i.id, i.name, i.tex, i.color));
+    } else {
+        const cat = activeLayer === 'ceils' ? 'ceils' : 'floors';
+        gameData.palette[cat].forEach(i => createCard(i.id, i.name, i.tex, i.color));
+    }
 }
 
 function renderGrid() {
@@ -91,56 +112,51 @@ function renderGrid() {
     for(let z=0; z<GRID_SIZE; z++) {
         for(let x=0; x<GRID_SIZE; x++) {
             const cell = document.createElement('div');
-            cell.className = 'grid-cell relative';
+            cell.className = 'grid-cell';
             
-            // Background color is Floor/Ceil based on layer. If Entities layer, show floor as faint background.
             const floorId = gameData.map.floors[z][x];
             const ceilId = gameData.map.ceils[z][x];
             const entId = gameData.map.entities[z][x];
 
-            // Render Base Color
-            if(activeLayer === 'ceils') {
-                const cObj = gameData.palette.ceils.find(i=>i.id===ceilId);
-                cell.style.backgroundColor = cObj ? cObj.color : '#000';
+            // Visual feedback of what is there
+            if (activeLayer === 'ceils') {
+                const c = gameData.palette.ceils.find(i=>i.id===ceilId);
+                if (c) cell.style.backgroundImage = `url(${resolveAsset(c.tex)})`;
             } else {
-                const fObj = gameData.palette.floors.find(i=>i.id===floorId);
-                cell.style.backgroundColor = fObj ? fObj.color : '#000';
-                if(activeLayer === 'entities') cell.style.opacity = '0.7'; // Dim floor to see entities better
-            }
-
-            // Render Entity Icon on top
-            if(activeLayer === 'entities' && entId !== ID_EMPTY) {
-                const entMarker = document.createElement('div');
-                entMarker.className = 'absolute inset-0 m-auto';
+                const f = gameData.palette.floors.find(i=>i.id===floorId);
+                if (f) cell.style.backgroundImage = `url(${resolveAsset(f.tex)})`;
                 
-                if(entId === ID_PLAYER) { entMarker.className += ' w-4 h-4 bg-blue-500 rounded-full border-2 border-white'; }
-                else if(entId === ID_GOAL) { entMarker.className += ' w-4 h-4 bg-green-500 border-2 border-white'; }
-                else {
-                    let eObj = gameData.palette.walls.find(i=>i.id===entId) || 
-                               gameData.palette.enemies.find(i=>i.id===entId) || 
-                               gameData.palette.objects.find(i=>i.id===entId) || 
-                               gameData.palette.items.find(i=>i.id===entId);
-                    if(eObj) {
-                        entMarker.style.backgroundColor = eObj.color;
-                        entMarker.style.width = '80%'; entMarker.style.height = '80%';
-                        if(!gameData.palette.walls.find(i=>i.id===entId)) entMarker.style.borderRadius = '50%'; // Sprites are circles
+                // Show entities on top if not in ceil mode
+                if (entId !== ID_EMPTY) {
+                    const overlay = document.createElement('div');
+                    overlay.className = 'absolute inset-1 pointer-events-none';
+                    if (entId === ID_PLAYER) overlay.style.backgroundColor = '#3b82f6';
+                    else if (entId === ID_GOAL) overlay.style.backgroundImage = `url(${resolveAsset('goal')})`;
+                    else {
+                        const e = findAssetInPalette(entId);
+                        if (e) overlay.style.backgroundImage = `url(${resolveAsset(e.tex)})`;
                     }
+                    overlay.style.backgroundSize = 'contain';
+                    overlay.style.backgroundRepeat = 'no-repeat';
+                    overlay.style.backgroundPosition = 'center';
+                    cell.appendChild(overlay);
+                    if (activeLayer !== 'entities') cell.style.opacity = '0.5';
                 }
-                cell.appendChild(entMarker);
             }
 
             const paint = (e) => {
                 e.preventDefault();
-                if(activeLayer === 'entities') {
-                    if(currentPaintId === ID_PLAYER || currentPaintId === ID_GOAL) {
-                        // Enforce unique
+                if (activeLayer === 'entities') {
+                    if (activeAssetId === ID_PLAYER || activeAssetId === ID_GOAL) {
                         for(let r=0; r<GRID_SIZE; r++) for(let c=0; c<GRID_SIZE; c++) 
-                            if(gameData.map.entities[r][c] === currentPaintId) gameData.map.entities[r][c] = 0;
+                            if(gameData.map.entities[r][c] === activeAssetId) gameData.map.entities[r][c] = 0;
                     }
-                    gameData.map.entities[z][x] = currentPaintId;
-                } 
-                else if (activeLayer === 'floors') gameData.map.floors[z][x] = currentPaintId;
-                else if (activeLayer === 'ceils') gameData.map.ceils[z][x] = currentPaintId;
+                    gameData.map.entities[z][x] = activeAssetId;
+                } else if (activeLayer === 'floors') {
+                    gameData.map.floors[z][x] = activeAssetId;
+                } else {
+                    gameData.map.ceils[z][x] = activeAssetId;
+                }
                 renderGrid();
             };
 
@@ -151,106 +167,151 @@ function renderGrid() {
     }
 }
 
+function findAssetInPalette(id) {
+    for (let cat in gameData.palette) {
+        if (Array.isArray(gameData.palette[cat])) {
+            const found = gameData.palette[cat].find(i => i.id === id);
+            if (found) return { item: found, category: cat };
+        }
+    }
+    return null;
+}
+
+/**
+ * INSPECTOR LOGIC
+ */
+function openInspector(id) {
+    const found = findAssetInPalette(id);
+    if (!found) return;
+    
+    inspectorTargetId = id;
+    const { item, category } = found;
+    const container = document.getElementById('inspector-fields');
+    container.innerHTML = '';
+
+    const addField = (label, key, type = 'text', step = null) => {
+        const group = document.createElement('div');
+        group.className = 'input-group';
+        group.innerHTML = `<label>${label}</label>`;
+        const input = document.createElement('input');
+        input.type = type;
+        if (step) input.step = step;
+        input.value = item[key] || '';
+        if (key === 'tex') input.value = gameData.assets[item.tex] || '';
+        
+        input.onchange = (e) => {
+            if (key === 'tex') {
+                gameData.assets[item.tex] = e.target.value;
+                renderLibrary();
+                renderGrid();
+            } else {
+                item[key] = type === 'number' ? Number(e.target.value) : e.target.value;
+                renderLibrary();
+                renderGrid();
+            }
+        };
+        group.appendChild(input);
+        container.appendChild(group);
+    };
+
+    addField("Name", "name");
+    addField("Image URL", "tex");
+    addField("Color Map", "color", "color");
+    
+    if (category === 'enemies') {
+        addField("Health", "hp", "number");
+        addField("Speed", "speed", "number", "0.01");
+    } else if (category === 'items') {
+        addField("Value", "value", "number");
+    }
+
+    document.getElementById('inspector').style.display = 'block';
+}
+
+function closeInspector() {
+    document.getElementById('inspector').style.display = 'none';
+    inspectorTargetId = null;
+}
+
+function addNewAssetPrompt() {
+    // Simple logic to add a new asset to the current active category
+    let category = 'walls';
+    if (activeLibTab === 'tiles') category = activeLayer === 'ceils' ? 'ceils' : 'floors';
+    else category = 'walls';
+
+    let maxId = 200;
+    for (let cat in gameData.palette) {
+        if (Array.isArray(gameData.palette[cat])) {
+            gameData.palette[cat].forEach(i => maxId = Math.max(maxId, i.id));
+        }
+    }
+    const id = maxId + 1;
+    const newAsset = { id, name: "New " + category, tex: category + "_" + id, color: "#ffffff" };
+    if (category === 'enemies') Object.assign(newAsset, { hp: 100, speed: 0.05 });
+    if (category === 'items') Object.assign(newAsset, { type: 'score', value: 50 });
+
+    gameData.palette[category].push(newAsset);
+    activeAssetId = id;
+    renderLibrary();
+    openInspector(id);
+}
+
+function deleteActiveAsset() {
+    if (!inspectorTargetId) return;
+    for (let cat in gameData.palette) {
+        if (Array.isArray(gameData.palette[cat])) {
+            const idx = gameData.palette[cat].findIndex(i => i.id === inspectorTargetId);
+            if (idx !== -1) {
+                gameData.palette[cat].splice(idx, 1);
+                break;
+            }
+        }
+    }
+    closeInspector();
+    activeAssetId = ID_EMPTY;
+    renderLibrary();
+}
+
+function showProjectSettings() {
+    // Reuse inspector for global settings
+    const container = document.getElementById('inspector-fields');
+    container.innerHTML = '<h3 class="text-white font-bold mb-4">Project Settings</h3>';
+    
+    const addField = (label, val, onChange) => {
+        const group = document.createElement('div');
+        group.className = 'input-group';
+        group.innerHTML = `<label>${label}</label>`;
+        const input = document.createElement('input');
+        input.value = val;
+        input.onchange = (e) => onChange(e.target.value);
+        group.appendChild(input);
+        container.appendChild(group);
+    };
+
+    addField("Game Title", gameData.title, (v) => { 
+        gameData.title = v; 
+        document.getElementById('game-title-display').innerText = v;
+        document.getElementById('boot-title').innerText = v;
+    });
+    addField("Menu Background URL", gameData.startBg, (v) => {
+        gameData.startBg = v;
+        if(v) document.getElementById('boot-screen').style.backgroundImage = `url(${v})`;
+    });
+
+    document.getElementById('inspector').style.display = 'block';
+}
+
 function fillMap() {
     for(let z=0; z<GRID_SIZE; z++) {
         for(let x=0; x<GRID_SIZE; x++) {
-            if(activeLayer === 'entities') gameData.map.entities[z][x] = currentPaintId;
-            if(activeLayer === 'floors') gameData.map.floors[z][x] = currentPaintId;
-            if(activeLayer === 'ceils') gameData.map.ceils[z][x] = currentPaintId;
+            if(activeLayer === 'entities') gameData.map.entities[z][x] = activeAssetId;
+            if(activeLayer === 'floors') gameData.map.floors[z][x] = activeAssetId;
+            if(activeLayer === 'ceils') gameData.map.ceils[z][x] = activeAssetId;
         }
     }
     renderGrid();
 }
 
-/**
- * DB ASSET MANAGER UI
- */
-function updateDBItem(category, id, key, val) {
-    const item = gameData.palette[category].find(x => x.id === id);
-    if(item) { item[key] = (key==='hp'||key==='speed'||key==='value')?Number(val):val; }
-    renderPalette(); renderGrid();
-}
-
-function addDBItem(category) {
-    const maxIdStr = category.substring(0, 3).toUpperCase(); // Hack to ensure unique ranges per category isn't strictly needed if we just Math.max all IDs.
-    // Let's just find true max globally to be safe
-    let maxId = 10;
-    ['floors','ceils','walls','enemies','objects','items'].forEach(c => {
-        gameData.palette[c].forEach(i => maxId = Math.max(maxId, i.id));
-    });
-    const id = maxId + 1;
-    
-    let base = { id, name: "New " + category, tex: category + "_" + id, color: "#ffffff" };
-    if(category === 'enemies') base = { ...base, hp: 100, speed: 0.05 };
-    if(category === 'items') base = { ...base, type: 'score', value: 50 };
-    
-    gameData.palette[category].push(base);
-    renderDB(); renderPalette();
-}
-
-function renderDB() {
-    let html = `
-        <div class="bg-gray-800 p-3 rounded"><h4 class="text-xs font-bold text-gray-400 mb-2">Global Weapon</h4>
-        <input type="text" value="${gameData.assets.gun || ''}" placeholder="Gun Sprite URL" onchange="gameData.assets.gun=this.value" class="w-full bg-gray-700 text-xs px-2 py-1 rounded text-white mb-1"></div>
-    `;
-
-    const buildCat = (catName, title, extraHTMLFn) => {
-        let catHtml = `<div class="bg-gray-800 p-3 rounded"><h4 class="text-xs font-bold text-gray-400 mb-2 flex justify-between">${title} <button onclick="addDBItem('${catName}')" class="text-blue-400 hover:text-white">+</button></h4><div class="space-y-2">`;
-        gameData.palette[catName].forEach(i => {
-            if(!gameData.assets[i.tex]) gameData.assets[i.tex] = ""; // init
-            catHtml += `<div class="bg-gray-900 p-2 rounded">
-                <div class="flex gap-2 items-center mb-1">
-                    <input type="color" value="${i.color}" onchange="updateDBItem('${catName}', ${i.id}, 'color', this.value)" class="w-6 h-6 cursor-pointer">
-                    <input type="text" value="${i.name}" onchange="updateDBItem('${catName}', ${i.id}, 'name', this.value)" class="flex-1 bg-gray-700 text-xs px-2 py-1 rounded text-white">
-                </div>
-                <input type="text" value="${gameData.assets[i.tex]}" placeholder="Texture/Sprite URL" onchange="gameData.assets['${i.tex}']=this.value" class="w-full bg-gray-700 text-xs px-2 py-1 rounded text-white mb-1">
-                ${extraHTMLFn ? extraHTMLFn(i) : ''}
-            </div>`;
-        });
-        return catHtml + `</div></div>`;
-    };
-
-    html += buildCat('walls', 'Walls (Blocks)', null);
-    html += buildCat('floors', 'Floors', null);
-    html += buildCat('ceils', 'Ceilings', null);
-    html += buildCat('objects', 'Objects (Solid)', null);
-    
-    html += buildCat('enemies', 'Enemies (Hostile)', (i) => `
-        <div class="flex gap-2 text-xs text-gray-400">
-            HP: <input type="number" value="${i.hp}" onchange="updateDBItem('enemies', ${i.id}, 'hp', this.value)" class="w-16 bg-gray-700 px-1 py-1 rounded text-white">
-            Spd: <input type="number" step="0.01" value="${i.speed}" onchange="updateDBItem('enemies', ${i.id}, 'speed', this.value)" class="w-16 bg-gray-700 px-1 py-1 rounded text-white">
-        </div>`);
-        
-    html += buildCat('items', 'Items (Collectible)', (i) => `
-        <div class="flex gap-2 text-xs text-gray-400 items-center">
-            Effect: <select onchange="updateDBItem('items', ${i.id}, 'type', this.value)" class="bg-gray-700 px-1 py-1 rounded text-white">
-                <option value="score" ${i.type==='score'?'selected':''}>Score</option><option value="hp" ${i.type==='hp'?'selected':''}>Heal (HP)</option>
-            </select>
-            Val: <input type="number" value="${i.value}" onchange="updateDBItem('items', ${i.id}, 'value', this.value)" class="w-16 bg-gray-700 px-1 py-1 rounded text-white">
-        </div>`);
-
-    document.getElementById('db-categories').innerHTML = html;
-}
-
-function updateSettings() {
-    gameData.title = document.getElementById('game-title-input').value || "MY RETRO ADVENTURE";
-    gameData.startBg = document.getElementById('game-start-bg').value;
-    document.getElementById('boot-title').innerText = gameData.title;
-    if(gameData.startBg) document.getElementById('boot-screen').style.backgroundImage = `url(${gameData.startBg})`;
-    else document.getElementById('boot-screen').style.backgroundImage = 'none';
-}
-
-function renderUI() {
-    setLayer('entities');
-    renderDB();
-    document.getElementById('game-title-input').value = gameData.title;
-    document.getElementById('game-start-bg').value = gameData.startBg || "";
-    updateSettings();
-}
-
-/**
- * EXPORT / IMPORT
- */
 function downloadGame() {
     const a = document.createElement('a');
     a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(gameData));
@@ -262,18 +323,8 @@ function importGame(event) {
     const file = event.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
-        try { gameData = JSON.parse(e.target.result); renderUI(); alert("Game Loaded!"); } 
+        try { gameData = JSON.parse(e.target.result); renderUI(); } 
         catch(err) { alert("Invalid game file."); }
     };
     reader.readAsText(file);
-}
-
-function generateShareURL() {
-    try {
-        const b64 = btoa(encodeURIComponent(JSON.stringify(gameData)));
-        window.location.hash = b64;
-        navigator.clipboard.writeText(window.location.href).then(() => {
-            const f = document.getElementById('share-feedback'); f.classList.remove('hidden'); setTimeout(() => f.classList.add('hidden'), 3000);
-        }).catch(e => alert("Please copy URL manually from address bar."));
-    } catch(e) { alert("Game data too large for URL link. Use Save Project instead."); }
 }

@@ -8,93 +8,84 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="flex flex-col md:flex-row h-screen">
+<body class="unselectable">
 
     <!-- BOOT SCREEN -->
     <div id="boot-screen" class="fullscreen-overlay">
-        <div class="bg-black/60 p-12 rounded-2xl border-4 border-gray-700 backdrop-blur-sm">
-            <h1 id="boot-title" class="title-text text-blue-400">RETRO ENGINE</h1>
-            <p class="text-xl text-gray-300 mb-8 font-bold">Game Creator Studio & Player</p>
+        <div class="bg-black/40 p-12 rounded-3xl border-4 border-white/10 backdrop-blur-xl">
+            <h1 id="boot-title" class="title-text">RETRO ENGINE</h1>
+            <p class="text-xl text-blue-200 mb-10 font-medium tracking-widest">CREATOR STUDIO</p>
             
-            <div class="flex flex-col md:flex-row gap-6 justify-center">
-                <button onclick="playDemo()" class="bg-green-600 hover:bg-green-500 text-white px-8 py-4 rounded-xl font-black text-2xl shadow-[0_6px_0_#166534] active:translate-y-[6px] active:shadow-none transition-all">
-                    ► PLAY DEMO GAME
+            <div class="flex flex-col md:flex-row gap-8 justify-center">
+                <button onclick="AudioEngine.resume(); playDemo();" class="bg-green-500 hover:bg-green-400 text-white px-10 py-5 rounded-2xl font-black text-3xl shadow-[0_8px_0_#15803d] active:translate-y-2 active:shadow-none transition-all flex items-center gap-3">
+                    <span>►</span> PLAY GAME
                 </button>
-                <button onclick="openEditor()" class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-4 rounded-xl font-black text-2xl shadow-[0_6px_0_#374151] active:translate-y-[6px] active:shadow-none transition-all border-2 border-gray-500">
-                    ⚙️ ENTER BUILDER
+                <button onclick="AudioEngine.resume(); openEditor();" class="bg-blue-600 hover:bg-blue-500 text-white px-10 py-5 rounded-2xl font-black text-3xl shadow-[0_8px_0_#1d4ed8] active:translate-y-2 active:shadow-none transition-all flex items-center gap-3 border-2 border-white/20">
+                    <span>⚙</span> BUILDER
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- EDITOR UI -->
-    <div id="editor-sidebar" class="w-full md:w-[450px] h-screen bg-gray-900 border-r border-gray-700 flex flex-col z-40 hidden">
-        <div class="p-4 bg-gray-800 border-b border-gray-700 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-white">Engine Builder</h1>
-            <button onclick="startGameEngine()" class="bg-green-600 hover:bg-green-500 px-4 py-1 rounded font-bold shadow">► TEST</button>
-        </div>
-
-        <div class="flex border-b border-gray-700 text-sm bg-gray-800">
-            <button onclick="switchTab('map')" id="tab-map" class="flex-1 py-3 font-semibold tab-btn active">Map Editor</button>
-            <button onclick="switchTab('assets')" id="tab-assets" class="flex-1 py-3 font-semibold tab-btn text-gray-400">Assets & DB</button>
-            <button onclick="switchTab('settings')" id="tab-settings" class="flex-1 py-3 font-semibold tab-btn text-gray-400">Project</button>
-        </div>
-
-        <!-- TAB: MAP -->
-        <div id="content-map" class="p-4 flex-1 flex flex-col overflow-hidden">
-            <!-- Layer Toggles -->
-            <div class="flex gap-2 mb-3 bg-gray-800 p-2 rounded-lg justify-center">
-                <button onclick="setLayer('entities')" id="btn-layer-entities" class="px-3 py-1 rounded font-bold text-xs bg-blue-600 text-white">Entities</button>
-                <button onclick="setLayer('floors')" id="btn-layer-floors" class="px-3 py-1 rounded font-bold text-xs bg-gray-700 text-gray-300">Floors</button>
-                <button onclick="setLayer('ceils')" id="btn-layer-ceils" class="px-3 py-1 rounded font-bold text-xs bg-gray-700 text-gray-300">Ceilings</button>
+    <!-- NEW EDITOR LAYOUT -->
+    <div id="editor-sidebar" class="hidden">
+        <div id="editor-layout">
+            <!-- TOOLBAR (LEFT) -->
+            <div id="toolbar">
+                <div class="tool-btn active" title="Paint Entities" onclick="setLayer('entities')" id="btn-layer-entities">👾</div>
+                <div class="tool-btn" title="Paint Floors" onclick="setLayer('floors')" id="btn-layer-floors">🧱</div>
+                <div class="tool-btn" title="Paint Ceilings" onclick="setLayer('ceils')" id="btn-layer-ceils">🌌</div>
+                <div class="h-px w-10 bg-gray-700 my-2"></div>
+                <div class="tool-btn" title="Test Level" onclick="startGameEngine()" style="background: #22c55e;">►</div>
+                <div class="tool-btn" title="Save Project" onclick="downloadGame()" style="background: #64748b;">💾</div>
+                <div class="tool-btn" title="Open Project" onclick="document.getElementById('import-file').click()" style="background: #64748b;">📂</div>
+                <input type="file" id="import-file" class="hidden" accept=".json" onchange="importGame(event)">
             </div>
 
-            <div class="bg-gray-800 p-3 rounded-lg mb-3 shadow-inner min-h-[80px]">
-                <h3 class="text-xs font-bold text-gray-400 mb-2" id="palette-title">Palette (Entities)</h3>
-                <div id="palette-container" class="flex flex-wrap gap-2"></div>
-            </div>
-
-            <div class="bg-gray-800 p-4 rounded-lg shadow-lg flex flex-col items-center flex-1 overflow-auto">
-                <div class="w-full flex justify-between items-center mb-2">
-                    <span class="text-sm font-bold text-gray-300" id="grid-label">Painting: Entities</span>
-                    <button onclick="fillMap()" class="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded">Fill Layer</button>
+            <!-- MAIN CANVAS (CENTER) -->
+            <div id="canvas-area">
+                <div id="grid-header">
+                    <div class="flex flex-col">
+                        <span id="grid-label" class="text-xs font-bold text-blue-400 uppercase tracking-widest">Painting: Entities</span>
+                        <span id="game-title-display" class="text-xl font-black text-white">My Retro Adventure</span>
+                    </div>
+                    <div class="flex gap-4">
+                        <button onclick="fillMap()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg font-bold text-sm">Fill Layer</button>
+                        <button onclick="showProjectSettings()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg font-bold text-sm">Settings</button>
+                    </div>
                 </div>
-                <div id="grid-container" class="grid bg-gray-900 border-2 border-gray-700 touch-none mx-auto"></div>
-            </div>
-        </div>
 
-        <!-- TAB: ASSETS DB -->
-        <div id="content-assets" class="p-4 flex-1 hidden overflow-y-auto space-y-4">
-            <p class="text-xs text-gray-400">Manage all unlimited custom types here.</p>
-            
-            <div id="db-categories" class="space-y-4 pb-10">
-                <!-- Injected via JS -->
+                <div id="grid-container" class="grid"></div>
             </div>
-        </div>
 
-        <!-- TAB: SETTINGS -->
-        <div id="content-settings" class="p-4 flex-1 hidden overflow-y-auto space-y-6">
-            <div class="bg-gray-800 p-4 rounded-lg space-y-3">
-                <h3 class="text-sm font-bold text-blue-400">Game Meta</h3>
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-1">Game Title</label>
-                    <input type="text" id="game-title-input" class="w-full bg-gray-700 rounded px-3 py-2 text-white font-bold" oninput="updateSettings()">
+            <!-- ASSET LIBRARY (RIGHT) -->
+            <div id="asset-library">
+                <div id="library-header">
+                    <span>LIBRARY</span>
+                    <button onclick="addNewAssetPrompt()" class="bg-blue-500 w-8 h-8 rounded-full flex items-center justify-center text-xl">+</button>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-1">Start Screen URL</label>
-                    <input type="text" id="game-start-bg" class="w-full bg-gray-700 rounded px-3 py-2 text-white placeholder-gray-500" placeholder="Background image URL" oninput="updateSettings()">
+                <div id="library-tabs">
+                    <div class="lib-tab active" id="tab-ent" onclick="switchLibTab('entities')">ENTITIES</div>
+                    <div class="lib-tab" id="tab-tile" onclick="switchLibTab('tiles')">TILES</div>
+                </div>
+                <div id="library-content">
+                    <!-- Cards injected via JS -->
                 </div>
             </div>
+        </div>
 
-            <div class="bg-gray-800 p-4 rounded-lg space-y-3">
-                <h3 class="text-sm font-bold text-green-400">Save & Share</h3>
-                <button onclick="downloadGame()" class="w-full bg-gray-700 hover:bg-gray-600 p-3 rounded font-bold flex justify-center gap-2">💾 Save Project (.json)</button>
-                <div class="relative">
-                    <input type="file" id="import-file" class="hidden" accept=".json" onchange="importGame(event)">
-                    <button onclick="document.getElementById('import-file').click()" class="w-full bg-gray-700 hover:bg-gray-600 p-3 rounded font-bold flex justify-center gap-2">📂 Open Project</button>
-                </div>
-                <button onclick="generateShareURL()" class="w-full bg-blue-600 hover:bg-blue-500 p-3 rounded font-bold flex justify-center gap-2 mt-2">🔗 Copy Playable Link</button>
-                <p id="share-feedback" class="text-green-400 text-xs font-bold text-center hidden">Copied to Clipboard!</p>
+        <!-- INSPECTOR (DRAWER) -->
+        <div id="inspector">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+                <h3 class="font-black text-blue-400 uppercase tracking-tighter">Properties</h3>
+                <button onclick="closeInspector()" class="text-gray-400">✕</button>
+            </div>
+            <div id="inspector-fields">
+                <!-- Fields injected via JS -->
+            </div>
+            <div class="mt-6 flex gap-2">
+                <button onclick="deleteActiveAsset()" class="flex-1 bg-red-600 py-2 rounded-lg font-bold text-sm">Delete</button>
+                <button onclick="closeInspector()" class="flex-1 bg-blue-600 py-2 rounded-lg font-bold text-sm">Apply</button>
             </div>
         </div>
     </div>
@@ -103,43 +94,40 @@
     <div id="game-container">
         <div id="crosshair"></div>
         <div id="weapon-container"><img id="weapon-img" src="" alt="weapon"></div>
+        
         <div id="hud">
-            <div class="text-red-500">HP: <span id="hp-display">100</span></div>
-            <div class="text-yellow-400 text-lg">SCORE: <span id="score-display">0</span></div>
-        </div>
-        <div id="flash"></div>
-
-        <div id="mobile-controls" class="absolute bottom-6 left-2 right-6 z-20 pointer-events-none unselectable">
-            <div class="flex justify-between items-end w-full h-full">
-                <div class="grid grid-cols-3 gap-1 pointer-events-auto opacity-70">
-                    <div></div><button id="btn-w" class="w-14 h-14 bg-gray-700 rounded-lg active:bg-gray-500 text-white font-bold text-2xl pb-1">↑</button><div></div>
-                    <button id="btn-a" class="w-14 h-14 bg-gray-700 rounded-lg active:bg-gray-500 text-white font-bold text-2xl pr-1">←</button>
-                    <button id="btn-s" class="w-14 h-14 bg-gray-700 rounded-lg active:bg-gray-500 text-white font-bold text-2xl pt-1">↓</button>
-                    <button id="btn-d" class="w-14 h-14 bg-gray-700 rounded-lg active:bg-gray-500 text-white font-bold text-2xl pl-1">→</button>
-                </div>
-                <button id="btn-fire" class="w-20 h-20 bg-red-600/80 rounded-full active:bg-red-400 text-white font-bold pointer-events-auto border-4 border-red-800 shadow-lg mb-2">FIRE</button>
+            <div class="hud-item flex items-center gap-4">
+                <span class="text-red-500 font-black text-2xl">HP</span>
+                <span id="hp-display" class="text-white font-black text-3xl">100</span>
+            </div>
+            <div class="hud-item flex items-center gap-4">
+                <span class="text-yellow-400 font-black text-2xl">SCORE</span>
+                <span id="score-display" class="text-white font-black text-3xl">0</span>
             </div>
         </div>
-        
-        <button id="btn-pause" onclick="stopGame()" class="absolute top-4 right-4 bg-gray-800 border-2 border-gray-600 text-white px-4 py-2 rounded font-bold z-20 pointer-events-auto hidden unselectable">EDIT (PAUSE)</button>
 
-        <div id="win-screen" class="fullscreen-overlay">
+        <div id="flash"></div>
+        <button id="btn-pause" onclick="stopGame()" class="absolute top-6 right-6 bg-white/10 hover:bg-white/20 backdrop-blur-md border-2 border-white/20 text-white px-6 py-3 rounded-2xl font-black z-20 pointer-events-auto hidden unselectable">PAUSE (EXIT)</button>
+
+        <div id="win-screen" class="fullscreen-overlay bg-green-900/90 backdrop-blur-md">
             <h1 class="title-text text-green-400">LEVEL CLEAR</h1>
-            <p class="text-2xl text-yellow-400 mb-8 font-bold">Final Score: <span id="final-score">0</span></p>
-            <button onclick="stopGame()" class="bg-white text-green-900 px-8 py-4 rounded-xl font-bold cursor-pointer pointer-events-auto text-xl">Back to Menu</button>
+            <p class="text-3xl text-yellow-400 mb-12 font-black">Score: <span id="final-score">0</span></p>
+            <button onclick="stopGame()" class="bg-white text-green-900 px-12 py-5 rounded-2xl font-black text-2xl cursor-pointer pointer-events-auto">BACK TO HUB</button>
         </div>
         
-        <div id="death-screen" class="fullscreen-overlay">
+        <div id="death-screen" class="fullscreen-overlay bg-red-950/90 backdrop-blur-md">
             <h1 class="title-text text-red-500">YOU DIED</h1>
-            <button onclick="startGameEngine()" class="bg-red-700 text-white px-8 py-4 rounded-xl font-bold mt-4 cursor-pointer pointer-events-auto border-2 border-red-400 text-xl shadow-[0_6px_0_#7f1d1d] active:translate-y-[6px] active:shadow-none">Try Again</button>
-            <button onclick="stopGame()" class="mt-8 text-sm text-gray-400 underline cursor-pointer pointer-events-auto">Return to Builder</button>
+            <button onclick="startGameEngine()" class="bg-red-600 text-white px-12 py-5 rounded-2xl font-black text-2xl mt-4 cursor-pointer pointer-events-auto border-4 border-red-400 shadow-[0_10px_0_#7f1d1d] active:translate-y-2 active:shadow-none">TRY AGAIN</button>
+            <button onclick="stopGame()" class="mt-12 text-gray-400 underline cursor-pointer pointer-events-auto font-bold">RETURN TO BUILDER</button>
         </div>
     </div>
 
+    <script src="js/audio.js"></script>
     <script src="js/state.js"></script>
     <script src="js/assets.js"></script>
     <script src="js/engine.js"></script>
     <script src="js/editor.js"></script>
     <script src="js/main.js"></script>
+
 </body>
 </html>
