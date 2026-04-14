@@ -140,8 +140,24 @@ function startGameEngine() {
     document.getElementById('game-container').style.display = 'block';
     document.getElementById('btn-pause').style.display = 'block';
     
-    if (isTouchDevice) document.getElementById('mobile-controls').style.display = 'flex';
-    else { try { document.getElementById('game-container').requestPointerLock(); } catch(e) {} }
+    // Always show mobile controls on touch devices, but still allow mouse use
+    if (isTouchDevice) {
+        document.getElementById('mobile-controls').style.display = 'flex';
+    }
+    
+    // Add a listener to request pointer lock on first click for better reliability
+    const clickToLock = () => {
+        if (gameActive) { // Lock even if touch is available
+            try { 
+                document.getElementById('game-container').requestPointerLock(); 
+                document.getElementById('game-container').removeEventListener('click', clickToLock);
+            } catch(e) { console.warn("Pointer lock failed", e); }
+        }
+    };
+    document.getElementById('game-container').addEventListener('click', clickToLock);
+    
+    // Attempt immediate lock if possible (often fails without gesture)
+    try { document.getElementById('game-container').requestPointerLock(); } catch(e) {}
     
     AudioEngine.startMusic();
     if (!animationFrameId) gameLoop();
@@ -151,9 +167,20 @@ function stopGame() {
     gameActive = false;
     document.getElementById('game-container').style.display = 'none';
     document.getElementById('mobile-controls').style.display = 'none';
+    document.getElementById('btn-pause').style.display = 'none';
+    
     AudioEngine.stopMusic();
-    if (document.pointerLockElement) document.exitPointerLock();
-    if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
+    
+    if (document.pointerLockElement) {
+        document.exitPointerLock();
+    }
+    
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    }
+    
+    // Default back to editor, but main.js can override
     document.getElementById('editor-sidebar').classList.remove('hidden');
     renderUI();
 }

@@ -1,6 +1,22 @@
 /**
  * BOOT & MAIN LOGIC
  */
+function showTitleScreen() {
+    // Hide everything
+    document.getElementById('boot-screen').style.display = 'flex';
+    document.getElementById('editor-sidebar').classList.add('hidden');
+    document.getElementById('game-container').style.display = 'none';
+    document.getElementById('mobile-controls').style.display = 'none';
+    
+    // Stop engine and music
+    if (typeof gameActive !== 'undefined') gameActive = false;
+    if (typeof AudioEngine !== 'undefined') AudioEngine.stopMusic();
+    if (typeof animationFrameId !== 'undefined' && animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    }
+}
+
 function playDemo() {
     initDemoMap();
     document.getElementById('boot-screen').style.display = 'none';

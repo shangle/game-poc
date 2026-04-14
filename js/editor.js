@@ -14,6 +14,12 @@ function openEditor() {
     renderUI();
 }
 
+function changeZoom(delta) {
+    let currentSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cell-size')) || 48;
+    let newSize = Math.max(16, Math.min(128, currentSize + delta));
+    document.documentElement.style.setProperty('--cell-size', newSize + 'px');
+}
+
 function renderUI() {
     renderLibrary();
     renderGrid();

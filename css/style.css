@@ -64,13 +64,19 @@ body {
     background-size: 20px 20px;
 }
 
+:root {
+    --cell-size: 48px;
+}
+
 #grid-container { 
     background: #000; border: 2px solid #334155; 
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
     image-rendering: pixelated; touch-action: none;
+    display: grid; /* Ensure grid display */
 }
 .grid-cell { 
-    width: 32px; height: 32px; border: 1px solid rgba(255,255,255,0.03); 
+    width: var(--cell-size); height: var(--cell-size); 
+    border: 1px solid rgba(255,255,255,0.03); 
     position: relative; background-size: cover; background-position: center;
 }
 

@@ -15,17 +15,37 @@
 
     <!-- BOOT SCREEN -->
     <div id="boot-screen" class="fullscreen-overlay">
-        <div class="text-center p-6">
+        <div class="text-center p-6 w-full max-w-xl">
             <h1 id="boot-title" class="title-text mb-2">RETRO<br>ENGINE</h1>
-            <p class="text-blue-400 font-bold tracking-[0.3em] text-sm mb-12">STUDIO v2.0</p>
+            <p class="text-blue-400 font-bold tracking-[0.3em] text-sm mb-12 uppercase">STUDIO v2.0</p>
             
-            <div class="flex flex-col gap-4 max-w-xs mx-auto">
-                <button onclick="AudioEngine.resume(); playDemo();" class="bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-black text-xl shadow-[0_6px_0_#1d4ed8] active:translate-y-1 active:shadow-none transition-all">
+            <div class="flex flex-col md:flex-row gap-6 mb-16 justify-center">
+                <button onclick="AudioEngine.resume(); playDemo();" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-6 rounded-2xl font-black text-2xl shadow-[0_8px_0_#1d4ed8] active:translate-y-1 active:shadow-none transition-all">
                     PLAY GAME
                 </button>
-                <button onclick="AudioEngine.resume(); openEditor();" class="bg-slate-800 hover:bg-slate-700 text-white py-4 rounded-xl font-black text-xl shadow-[0_6px_0_#0f172a] active:translate-y-1 active:shadow-none transition-all border border-slate-700">
+                <button onclick="AudioEngine.resume(); openEditor();" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-6 rounded-2xl font-black text-2xl shadow-[0_8px_0_#0f172a] active:translate-y-1 active:shadow-none transition-all border border-slate-700">
                     OPEN BUILDER
                 </button>
+            </div>
+
+            <!-- CONTROLS INFO -->
+            <div class="grid grid-cols-2 gap-4 text-left max-w-md mx-auto bg-slate-900/50 p-6 rounded-2xl border border-white/5 backdrop-blur-sm">
+                <div>
+                    <span class="block text-[10px] text-slate-500 font-black uppercase mb-1">Movement</span>
+                    <span class="text-slate-200 font-bold text-sm">WASD / Arrow Keys</span>
+                </div>
+                <div>
+                    <span class="block text-[10px] text-slate-500 font-black uppercase mb-1">Action</span>
+                    <span class="text-slate-200 font-bold text-sm">Mouse Click / Touch</span>
+                </div>
+                <div class="col-span-2 pt-2 border-t border-white/5">
+                    <span class="block text-[10px] text-slate-500 font-black uppercase mb-1">Aiming</span>
+                    <span class="text-slate-200 font-bold text-sm">Mouse Movement / Touch Pan</span>
+                </div>
+            </div>
+
+            <div class="mt-12 opacity-30 hover:opacity-100 transition-opacity">
+                <a href="https://github.com/shangle/game-poc" target="_blank" class="text-[10px] font-bold text-slate-500 hover:text-blue-400 uppercase tracking-widest">Source on GitHub</a>
             </div>
         </div>
     </div>
@@ -35,14 +55,16 @@
         <div id="editor-layout">
             <!-- TOOLBAR -->
             <div id="toolbar">
+                <div class="tool-btn" title="Back to Title" onclick="showTitleScreen()" style="background: #334155; margin-bottom: 12px;">🏠</div>
+                <div class="w-8 h-px bg-slate-800 my-1"></div>
                 <div class="tool-btn active" title="Entities" onclick="setLayer('entities')" id="btn-layer-entities">👾</div>
                 <div class="tool-btn" title="Floors" onclick="setLayer('floors')" id="btn-layer-floors">🧱</div>
                 <div class="tool-btn" title="Ceilings" onclick="setLayer('ceils')" id="btn-layer-ceils">🌌</div>
                 <div class="w-8 h-px bg-slate-800 my-2"></div>
                 <div class="tool-btn" title="Undo" onclick="undo()" style="font-size: 16px;">⟲</div>
                 <div class="w-8 h-px bg-slate-800 my-2"></div>
-                <button onclick="startGameEngine()" class="tool-btn" style="background: #10b981; color: white;">►</button>
-                <button onclick="downloadGame()" class="tool-btn" style="background: #334155; color: white;">💾</button>
+                <button onclick="startGameEngine()" class="tool-btn" title="Play Game" style="background: #10b981; color: white;">►</button>
+                <button onclick="downloadGame()" class="tool-btn" title="Save Project" style="background: #334155; color: white;">💾</button>
             </div>
 
             <!-- CANVAS -->
@@ -53,7 +75,12 @@
                         <span id="game-title-display" class="text-sm font-bold text-slate-300 truncate max-w-[150px]">My Adventure</span>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="undo()" class="md:hidden bg-slate-800 px-3 py-1 rounded text-xs font-bold">Undo</button>
+                        <div class="flex items-center bg-slate-800 rounded-lg p-1 px-2 gap-3 mr-2">
+                            <button onclick="changeZoom(-8)" class="text-slate-400 hover:text-white font-black text-xl leading-none">−</button>
+                            <span class="text-[10px] font-black text-slate-500 uppercase">Zoom</span>
+                            <button onclick="changeZoom(8)" class="text-slate-400 hover:text-white font-black text-xl leading-none">+</button>
+                        </div>
+                        <button onclick="undo()" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded text-xs font-bold">Undo</button>
                         <button onclick="fillMap()" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded text-xs font-bold">Fill</button>
                     </div>
                 </div>
