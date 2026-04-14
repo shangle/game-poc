@@ -21,24 +21,24 @@ A modular, web-based 3D retro game engine and visual level editor.
 ## 📝 Recent Changes (Log)
 - **2026-04-13:** 
     - Initialized `GEMINI.md` for project tracking.
-    - Categorized bugs and feature requests from user feedback.
     - Fixed "Black Box" terminal font rendering (User side).
+    - Fixed **UI Leak**: Added `.hidden` with `!important` to ensure editor UI disappears during gameplay.
+    - Added **Toolbar Labels**: Left toolbar now shows text labels (Home, Entities, etc.) for better clarity.
+    - Implemented **Asset Wizard**: Replaced the simple prompt with a 2-step wizard for creating new assets (Category -> Details).
+    - Added **Zoom Controls**: Grid editor now supports zooming in/out.
 
 ## 📋 Roadmap / TODO
 
 ### 🐛 Bug Fixes
-- [ ] **Builder Scaling:** Grid appears "zoomed out" or incorrectly scaled. Needs responsive centering/scaling.
-- [x] **UI Leak:** Editor tools appearing during "Play Game" mode.
-- [ ] **Mouse Capture:** Pointer Lock API failing on Chromebook/Mouse.
-- [x] **Navigation:** No way to return to the Title Screen from Editor/Game.
+- [ ] **Mouse Capture:** Further testing on Chromebook/Mouse to ensure Pointer Lock is consistent.
+- [ ] **Viewport Scaling:** Ensure Three.js canvas handles window resizing perfectly.
 
 ### 🎨 Title Screen & UX
-- [ ] **Polished Title Screen:** Add more info, versioning, and credits.
-- [ ] **Controls Section:** Display current keybindings on the title screen.
+- [x] **Polished Title Screen:** Added versioning, controls guide, and GitHub link.
 - [ ] **Control Configurator:** Allow users to remap movement/action keys. (Big Task)
 
 ### 🛠 Editor Enhancements
-- [ ] **Tool Clarity:** Add labels or tooltips to the toolbar icons.
+- [x] **Tool Clarity:** Added labels to the toolbar icons.
 - [ ] **Editor Modes:** 
     - [ ] Easy Mode (Basic placement)
     - [ ] Normal Mode (Standard features)

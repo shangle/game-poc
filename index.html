@@ -55,16 +55,30 @@
         <div id="editor-layout">
             <!-- TOOLBAR -->
             <div id="toolbar">
-                <div class="tool-btn" title="Back to Title" onclick="showTitleScreen()" style="background: #334155; margin-bottom: 12px;">🏠</div>
+                <div class="tool-btn" title="Back to Title" onclick="showTitleScreen()" style="background: #334155; margin-bottom: 12px;">
+                    🏠 <span class="tool-label">Home</span>
+                </div>
                 <div class="w-8 h-px bg-slate-800 my-1"></div>
-                <div class="tool-btn active" title="Entities" onclick="setLayer('entities')" id="btn-layer-entities">👾</div>
-                <div class="tool-btn" title="Floors" onclick="setLayer('floors')" id="btn-layer-floors">🧱</div>
-                <div class="tool-btn" title="Ceilings" onclick="setLayer('ceils')" id="btn-layer-ceils">🌌</div>
+                <div class="tool-btn active" title="Entities" onclick="setLayer('entities')" id="btn-layer-entities">
+                    👾 <span class="tool-label">Entities</span>
+                </div>
+                <div class="tool-btn" title="Floors" onclick="setLayer('floors')" id="btn-layer-floors">
+                    🧱 <span class="tool-label">Floors</span>
+                </div>
+                <div class="tool-btn" title="Ceilings" onclick="setLayer('ceils')" id="btn-layer-ceils">
+                    🌌 <span class="tool-label">Ceilings</span>
+                </div>
                 <div class="w-8 h-px bg-slate-800 my-2"></div>
-                <div class="tool-btn" title="Undo" onclick="undo()" style="font-size: 16px;">⟲</div>
+                <div class="tool-btn" title="Undo" onclick="undo()">
+                    ⟲ <span class="tool-label">Undo</span>
+                </div>
                 <div class="w-8 h-px bg-slate-800 my-2"></div>
-                <button onclick="startGameEngine()" class="tool-btn" title="Play Game" style="background: #10b981; color: white;">►</button>
-                <button onclick="downloadGame()" class="tool-btn" title="Save Project" style="background: #334155; color: white;">💾</button>
+                <button onclick="startGameEngine()" class="tool-btn" title="Play Game" style="background: #10b981; color: white;">
+                    ► <span class="tool-label">Play</span>
+                </button>
+                <button onclick="downloadGame()" class="tool-btn" title="Save Project" style="background: #334155; color: white;">
+                    💾 <span class="tool-label">Save</span>
+                </button>
             </div>
 
             <!-- CANVAS -->
@@ -163,6 +177,64 @@
     <script src="js/engine.js"></script>
     <script src="js/editor.js"></script>
     <script src="js/main.js"></script>
+
+    <!-- ASSET WIZARD -->
+    <div id="asset-wizard" class="modal-overlay">
+        <div class="wizard-card">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-black text-blue-500 uppercase tracking-tighter">New Asset Wizard</h2>
+                <button onclick="closeWizard()" class="text-slate-500 hover:text-white">✕</button>
+            </div>
+
+            <!-- Step 1: Type Selection -->
+            <div id="wizard-step-1">
+                <p class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-widest">Step 1: Select Category</p>
+                <div class="type-grid">
+                    <div class="type-btn" onclick="selectWizardType('walls')">
+                        <span class="type-icon">🧱</span>
+                        <span class="type-name">Wall</span>
+                    </div>
+                    <div class="type-btn" onclick="selectWizardType('floors')">
+                        <span class="type-icon">👣</span>
+                        <span class="type-name">Floor</span>
+                    </div>
+                    <div class="type-btn" onclick="selectWizardType('ceils')">
+                        <span class="type-icon">🌌</span>
+                        <span class="type-name">Ceiling</span>
+                    </div>
+                    <div class="type-btn" onclick="selectWizardType('enemies')">
+                        <span class="type-icon">👾</span>
+                        <span class="type-name">Enemy</span>
+                    </div>
+                    <div class="type-btn" onclick="selectWizardType('objects')">
+                        <span class="type-icon">📦</span>
+                        <span class="type-name">Object</span>
+                    </div>
+                    <div class="type-btn" onclick="selectWizardType('items')">
+                        <span class="type-icon">💎</span>
+                        <span class="type-name">Item</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Details -->
+            <div id="wizard-step-2" class="hidden">
+                <p class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-widest">Step 2: Basic Details</p>
+                <div class="input-group">
+                    <label>Asset Name</label>
+                    <input type="text" id="wizard-name" placeholder="e.g. Stone Wall">
+                </div>
+                <div class="input-group">
+                    <label>Texture URL (Optional)</label>
+                    <input type="text" id="wizard-tex" placeholder="https://...">
+                </div>
+                <div class="flex gap-3 mt-8">
+                    <button onclick="document.getElementById('wizard-step-2').classList.add('hidden'); document.getElementById('wizard-step-1').classList.remove('hidden');" class="flex-1 bg-slate-800 text-white py-4 rounded-xl font-bold">Back</button>
+                    <button onclick="finalizeWizard()" class="flex-1 bg-blue-600 text-white py-4 rounded-xl font-bold shadow-[0_4px_0_#1d4ed8] active:translate-y-1 active:shadow-none">Create Asset</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>

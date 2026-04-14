@@ -242,14 +242,50 @@ function closeInspector() {
     inspectorTargetId = null;
 }
 
+let wizardType = 'walls';
+
 function addNewAssetPrompt() {
-    let cat = (activeLibTab === 'tiles') ? (activeLayer === 'ceils' ? 'ceils' : 'floors') : 'walls';
+    document.getElementById('wizard-step-1').classList.remove('hidden');
+    document.getElementById('wizard-step-2').classList.add('hidden');
+    document.getElementById('asset-wizard').style.display = 'flex';
+}
+
+function closeWizard() {
+    document.getElementById('asset-wizard').style.display = 'none';
+}
+
+function selectWizardType(type) {
+    wizardType = type;
+    document.getElementById('wizard-step-1').classList.add('hidden');
+    document.getElementById('wizard-step-2').classList.remove('hidden');
+    document.getElementById('wizard-name').value = "New " + type.slice(0, -1);
+    document.getElementById('wizard-tex').value = "";
+}
+
+function finalizeWizard() {
+    const name = document.getElementById('wizard-name').value || "Unnamed Asset";
+    const tex = document.getElementById('wizard-tex').value || "";
+    
     let maxId = 0;
-    for (let c in gameData.palette) gameData.palette[c].forEach(i => maxId = Math.max(maxId, i.id));
+    for (let c in gameData.palette) {
+        if (Array.isArray(gameData.palette[c])) {
+            gameData.palette[c].forEach(i => maxId = Math.max(maxId, i.id));
+        }
+    }
+    
     const id = maxId + 1;
-    const newItem = { id, name: "New " + cat, tex: cat + "_" + id, color: "#ffffff" };
-    gameData.palette[cat].push(newItem);
+    const newItem = { id, name, tex: tex ? `custom_${id}` : wizardType + "_" + id, color: "#ffffff" };
+    
+    // Additional properties based on type
+    if (wizardType === 'enemies') { newItem.hp = 100; newItem.speed = 0.05; }
+    if (wizardType === 'items') { newItem.type = 'score'; newItem.value = 100; }
+
+    if (tex) gameData.assets[newItem.tex] = tex;
+    
+    gameData.palette[wizardType].push(newItem);
     activeAssetId = id;
+    
+    closeWizard();
     renderUI();
     openInspector(id);
 }
