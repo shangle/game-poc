@@ -195,22 +195,43 @@ function openInspector(id) {
     const container = document.getElementById('inspector-fields');
     container.innerHTML = '';
 
-    const addField = (label, key, type = 'text') => {
-        const group = document.createElement('div');
-        group.className = 'input-group';
-        
-        let labelHtml = `<label>${label}</label>`;
-        if (key === 'tex') {
-            labelHtml = `<div class="flex justify-between items-center mb-1">
-                <label class="!mb-0">${label}</label>
-                <a href="https://shangle.me/pixurl/" target="_blank" class="text-[9px] text-blue-400 font-bold hover:underline tracking-tighter">CREATE WITH PIXURL</a>
-            </div>`;
-        }
-        group.innerHTML = labelHtml;
+// LISTEN FOR PIXURL OUTPUT
+document.addEventListener('image-processed', (e) => {
+    const dataUrl = e.detail.dataUrl;
+    console.log("PixUrl Processed:", dataUrl);
+    
+    // Auto-fill active context
+    const wizardTex = document.getElementById('wizard-tex');
+    const inspectorTex = document.querySelector('#inspector-fields input[data-key="tex"]');
+    
+    if (wizardTex && !document.getElementById('asset-wizard').classList.contains('hidden')) {
+        wizardTex.value = dataUrl;
+    } else if (inspectorTex && inspectorTargetId) {
+        inspectorTex.value = dataUrl;
+        inspectorTex.dispatchEvent(new Event('change'));
+    }
+});
 
-        const input = document.createElement('input');
-        input.type = type;
-        input.value = (key === 'tex') ? (gameData.assets[item.tex] || '') : (item[key] || '');
+const addField = (label, key, type = 'text') => {
+    const group = document.createElement('div');
+    group.className = 'input-group';
+    
+    let labelHtml = `<label>${label}</label>`;
+    if (key === 'tex') {
+        labelHtml = `<div class="mb-4">
+            <label class="mb-2">${label}</label>
+            <div class="border border-slate-700 rounded-xl overflow-hidden bg-slate-950 mt-2">
+                <div class="bg-slate-800 px-3 py-1 text-[9px] font-black uppercase text-slate-400">PixUrl Tool</div>
+                <pixurl-utility></pixurl-utility>
+            </div>
+        </div>`;
+    }
+    group.innerHTML = labelHtml;
+
+    const input = document.createElement('input');
+    input.type = type;
+    if (key === 'tex') input.dataset.key = 'tex';
+    input.value = (key === 'tex') ? (gameData.assets[item.tex] || '') : (item[key] || '');
         
         input.onchange = (e) => {
             if (key === 'tex') gameData.assets[item.tex] = e.target.value;

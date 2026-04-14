@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Retro Engine Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://shangle.me/pixurl/pixurl-core.js"></script>
+    <script src="https://shangle.me/pixurl/plugins/pixel-editor.js"></script>
+</head>
+<body class="unselectable">
+
+    <!-- BOOT SCREEN -->
+    <div id="boot-screen" class="fullscreen-overlay">
+        <div class="text-center p-6 w-full max-w-xl">
+            <h1 id="boot-title" class="title-text mb-2">RETRO<br>ENGINE</h1>
+            <p class="text-blue-400 font-bold tracking-[0.3em] text-sm mb-12 uppercase">STUDIO v2.1</p>
+            
+            <div class="flex flex-col md:flex-row gap-6 mb-16 justify-center">
+                <button onclick="AudioEngine.resume(); playDemo();" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-6 rounded-2xl font-black text-2xl shadow-[0_8px_0_#1d4ed8] active:translate-y-1 active:shadow-none transition-all">
+                    PLAY GAME
+                </button>
+                <button onclick="AudioEngine.resume(); openEditor();" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-6 rounded-2xl font-black text-2xl shadow-[0_8px_0_#0f172a] active:translate-y-1 active:shadow-none transition-all border border-slate-700">
+                    OPEN BUILDER
+                </button>
+            </div>
+
+            <!-- CONTROLS INFO -->
+            <div class="grid grid-cols-2 gap-4 text-left max-w-md mx-auto bg-slate-900/50 p-6 rounded-2xl border border-white/5 backdrop-blur-sm">
+                <div>
+                    <span class="block text-[10px] text-slate-500 font-black uppercase mb-1">Movement</span>
+                    <span class="text-slate-200 font-bold text-sm">WASD / Arrow Keys</span>
+                </div>
+                <div>
+                    <span class="block text-[10px] text-slate-500 font-black uppercase mb-1">Action</span>
+                    <span class="text-slate-200 font-bold text-sm">Mouse Click / Touch</span>
+                </div>
+                <div class="col-span-2 pt-2 border-t border-white/5">
+                    <span class="block text-[10px] text-slate-500 font-black uppercase mb-1">Aiming</span>
+                    <span class="text-slate-200 font-bold text-sm">Mouse Movement / Touch Pan</span>
+                </div>
+            </div>
+
+            <div class="mt-12 flex justify-center gap-6 opacity-40 hover:opacity-100 transition-opacity">
+                <a href="blog/index.html" class="text-[10px] font-bold text-slate-500 hover:text-blue-400 uppercase tracking-widest">Developer Blog</a>
+                <a href="https://github.com/shangle/game-poc" target="_blank" class="text-[10px] font-bold text-slate-500 hover:text-blue-400 uppercase tracking-widest">Source on GitHub</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDITOR LAYOUT -->
+    <div id="editor-sidebar" class="hidden">
+        <div id="editor-layout">
+            <!-- TOOLBAR -->
+            <div id="toolbar">
+                <div class="tool-btn" title="Back to Title" onclick="showTitleScreen()" style="background: #334155; margin-bottom: 12px;">
+                    🏠 <span class="tool-label">Home</span>
+                </div>
+                <div class="w-8 h-px bg-slate-800 my-1"></div>
+                <div class="tool-btn active" title="Entities" onclick="setLayer('entities')" id="btn-layer-entities">
+                    👾 <span class="tool-label">Entities</span>
+                </div>
+                <div class="tool-btn" title="Floors" onclick="setLayer('floors')" id="btn-layer-floors">
+                    🧱 <span class="tool-label">Floors</span>
+                </div>
+                <div class="tool-btn" title="Ceilings" onclick="setLayer('ceils')" id="btn-layer-ceils">
+                    🌌 <span class="tool-label">Ceilings</span>
+                </div>
+                <div class="w-8 h-px bg-slate-800 my-2"></div>
+                <div class="tool-btn" title="Undo" onclick="undo()">
+                    ⟲ <span class="tool-label">Undo</span>
+                </div>
+                <div class="w-8 h-px bg-slate-800 my-2"></div>
+                <button onclick="startGameEngine()" class="tool-btn" title="Play Game" style="background: #10b981; color: white;">
+                    ► <span class="tool-label">Play</span>
+                </button>
+                <button onclick="downloadGame()" class="tool-btn" title="Save Project" style="background: #334155; color: white;">
+                    💾 <span class="tool-label">Save</span>
+                </button>
+            </div>
+
+            <!-- CANVAS -->
+            <div id="canvas-area">
+                <div id="grid-header">
+                    <div class="flex flex-col">
+                        <span id="grid-label" class="text-[10px] font-black text-blue-500 tracking-widest uppercase">ENTITIES</span>
+                        <span id="game-title-display" class="text-sm font-bold text-slate-300 truncate max-w-[150px]">My Adventure</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="flex items-center bg-slate-800 rounded-lg p-1 px-2 gap-3 mr-2">
+                            <button onclick="changeZoom(-8)" class="text-slate-400 hover:text-white font-black text-xl leading-none">−</button>
+                            <span class="text-[10px] font-black text-slate-500 uppercase">Zoom</span>
+                            <button onclick="changeZoom(8)" class="text-slate-400 hover:text-white font-black text-xl leading-none">+</button>
+                        </div>
+                        <button onclick="undo()" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded text-xs font-bold">Undo</button>
+                        <button onclick="fillMap()" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded text-xs font-bold">Fill</button>
+                    </div>
+                </div>
+
+                <div id="grid-scroll-container">
+                    <div id="grid-container"></div>
+                </div>
+            </div>
+
+            <!-- LIBRARY -->
+            <div id="asset-library">
+                <div id="library-header">
+                    <span>ASSETS</span>
+                    <button onclick="addNewAssetPrompt()" class="bg-blue-600 hover:bg-blue-500 w-8 h-8 rounded-md flex items-center justify-center text-xl font-bold">+</button>
+                </div>
+                <div id="library-content"></div>
+            </div>
+        </div>
+
+        <!-- INSPECTOR -->
+        <div id="inspector">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-black text-sm tracking-tighter text-blue-500 uppercase">Edit Asset</h3>
+                <button onclick="closeInspector()" class="text-slate-500 hover:text-white">✕</button>
+            </div>
+            <div id="inspector-fields"></div>
+            <div class="mt-8 flex gap-3">
+                <button onclick="deleteActiveAsset()" class="flex-1 bg-rose-600/20 text-rose-500 border border-rose-500/50 py-3 rounded-xl font-bold text-sm">Delete</button>
+                <button onclick="closeInspector()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME VIEWPORT -->
+    <div id="game-container">
+        <div id="crosshair"></div>
+        <div id="weapon-container"><img id="weapon-img" src="" alt="weapon"></div>
+        
+        <div id="hud">
+            <div class="hud-item flex items-baseline gap-2">
+                <span class="text-rose-500 font-black text-xs uppercase tracking-tighter">Health</span>
+                <span id="hp-display" class="text-white font-black text-2xl">100</span>
+            </div>
+            <div class="hud-item flex items-baseline gap-2">
+                <span class="text-amber-400 font-black text-xs uppercase tracking-tighter">Score</span>
+                <span id="score-display" class="text-white font-black text-2xl">0</span>
+            </div>
+        </div>
+
+        <div id="flash"></div>
+        <button id="btn-pause" onclick="stopGame()" class="absolute top-6 right-6 bg-slate-900/80 border border-white/10 text-white px-5 py-2 rounded-xl font-bold z-20 pointer-events-auto hidden">EXIT TEST</button>
+
+        <div id="win-screen" class="fullscreen-overlay bg-emerald-950/95 backdrop-blur-xl hidden">
+            <h1 class="title-text text-emerald-400 mb-4">CLEAR</h1>
+            <p class="text-slate-300 font-bold mb-12">FINAL SCORE: <span id="final-score" class="text-white">0</span></p>
+            <button onclick="stopGame()" class="bg-white text-emerald-950 px-10 py-4 rounded-2xl font-black text-xl">CONTINUE</button>
+        </div>
+        
+        <div id="death-screen" class="fullscreen-overlay bg-rose-950/95 backdrop-blur-xl hidden">
+            <h1 class="title-text text-rose-500 mb-8">WASTED</h1>
+            <button onclick="startGameEngine()" class="bg-rose-600 text-white px-10 py-4 rounded-2xl font-black text-xl mb-4">RESPAWN</button>
+            <button onclick="stopGame()" class="text-slate-400 font-bold hover:text-white transition-colors">BACK TO EDITOR</button>
+        </div>
+
+        <!-- MOBILE HUD CONTROLS -->
+        <div id="mobile-controls">
+            <div class="flex gap-2">
+                <div id="m-up" class="joy-btn">↑</div>
+                <div id="m-down" class="joy-btn">↓</div>
+                <div id="m-left" class="joy-btn">←</div>
+                <div id="m-right" class="joy-btn">→</div>
+            </div>
+            <div id="m-fire" class="joy-btn w-20 h-20 bg-rose-600 border-rose-400">🔥</div>
+        </div>
+    </div>
+
+    <script src="js/audio.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/assets.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/main.js"></script>
+
+    <!-- ASSET WIZARD -->
+    <div id="asset-wizard" class="modal-overlay">
+        <div class="wizard-card">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-black text-blue-500 uppercase tracking-tighter">New Asset Wizard</h2>
+                <button onclick="document.getElementById('asset-wizard').classList.add('hidden')" class="text-slate-500 hover:text-white">✕</button>
+            </div>
+
+            <!-- Step 1: Type Selection -->
+            <div id="wizard-step-1">
+                <p class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-widest">Step 1: Select Category</p>
+                <div class="type-grid">
+                    <div class="type-btn" onclick="selectWizardType('walls')">
+                        <span class="type-icon">🧱</span>
+                        <span class="type-name">Wall</span>
+                    </div>
+                    <div class="type-btn" onclick="selectWizardType('floors')">
+                        <span class="type-icon">👣</span>
+                        <span class="type-name">Floor</span>
+                    </div>
+                    <div class="type-btn" onclick="selectWizardType('ceils')">
+                        <span class="type-icon">🌌</span>
+                        <span class="type-name">Ceiling</span>
+                    </div>
+                    <div class="type-btn" onclick="selectWizardType('enemies')">
+                        <span class="type-icon">👾</span>
+                        <span class="type-name">Enemy</span>
+                    </div>
+                    <div class="type-btn" onclick="selectWizardType('objects')">
+                        <span class="type-icon">📦</span>
+                        <span class="type-name">Object</span>
+                    </div>
+                    <div class="type-btn" onclick="selectWizardType('items')">
+                        <span class="type-icon">💎</span>
+                        <span class="type-name">Item</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Details -->
+            <div id="wizard-step-2" class="hidden">
+                <p class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-widest">Step 2: Basic Details</p>
+                <div class="input-group">
+                    <label>Asset Name</label>
+                    <input type="text" id="wizard-name" placeholder="e.g. Stone Wall">
+                </div>
+                <div class="input-group">
+                    <label>Texture URL (Optional)</label>
+                    <input type="text" id="wizard-tex" placeholder="https://..." class="mb-4">
+                    
+                    <div class="border border-slate-700 rounded-xl overflow-hidden bg-slate-950">
+                        <div class="bg-slate-800 px-3 py-1 text-[9px] font-black uppercase text-slate-400">PixUrl Tool</div>
+                        <pixurl-utility></pixurl-utility>
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-8">
+                    <button onclick="document.getElementById('wizard-step-2').classList.add('hidden'); document.getElementById('wizard-step-1').classList.remove('hidden');" class="flex-1 bg-slate-800 text-white py-4 rounded-xl font-bold">Back</button>
+                    <button onclick="finalizeWizard()" class="flex-1 bg-blue-600 text-white py-4 rounded-xl font-bold shadow-[0_4px_0_#1d4ed8] active:translate-y-1 active:shadow-none">Create Asset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -16,12 +16,14 @@ A modular, web-based 3D retro game engine and visual level editor.
 - [x] Asset Library & Inspector
 - [x] Mobile HUD & Touch Controls
 - [x] Audio Engine
-- [x] URL-based level sharing (Base64)
 ## 📝 Recent Changes (Log)
 - **2026-04-13:** 
-    - **Testing & CI/CD Pipeline:** Initialized npm, installed Jest for core logic tests, and Playwright for E2E UI testing. Added a GitHub Actions workflow (`.github/workflows/ci.yml`) to enforce code quality automatically on every push.
-    - **Developer Blog:** Built a 6-part blog series chronicling the engine's evolution (Library of Babel, MicroDeck, Web IDE, and the vision of LLM image-template generation). Includes a tutorial for non-coders using Gemini CLI. Added a blog link to the main menu.
-    - **v2.1 Bump**: Updated Home Screen version to v2.1 for clarity.
+    - **Landing Page**: Created a modern, professional landing page (`index.html`) with a "Launch Engine" call-to-action.
+    - **Project Documentation**: Created `DOCS.md` with a detailed breakdown of the `gameData` JSON structure and a mandatory update reminder.
+    - **Embedded PixUrl**: Replaced external links with embedded `<pixurl-utility>` components in the Wizard and Inspector. Added a global listener to handle processed images.
+    - **Refactor**: Moved the core game engine to `launcher.html`.
+...
+
     - **Pixurl Integration**: Added "CREATE WITH PIXURL" helper links to both the Asset Wizard and the Inspector texture fields.
     - **Code Audit & Simplification**: Centralized all screen transitions into a single `setUIMode(mode)` function in `main.js`. This eliminates the "UI Leak" where the editor would remain visible during gameplay.
 ...
