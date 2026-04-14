@@ -245,13 +245,17 @@ function closeInspector() {
 let wizardType = 'walls';
 
 function addNewAssetPrompt() {
+    const wizard = document.getElementById('asset-wizard');
     document.getElementById('wizard-step-1').classList.remove('hidden');
     document.getElementById('wizard-step-2').classList.add('hidden');
-    document.getElementById('asset-wizard').style.display = 'flex';
+    wizard.classList.remove('hidden');
+    wizard.style.display = 'flex'; // Ensure flex for centering
 }
 
 function closeWizard() {
-    document.getElementById('asset-wizard').style.display = 'none';
+    const wizard = document.getElementById('asset-wizard');
+    wizard.classList.add('hidden');
+    wizard.style.display = 'none';
 }
 
 function selectWizardType(type) {

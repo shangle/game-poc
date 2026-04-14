@@ -136,15 +136,10 @@ if (fireBtn) fireBtn.addEventListener('touchstart', (e) => { e.preventDefault();
 function startGameEngine() {
     init3D(); buildWorld();
     gameActive = true;
-    document.getElementById('editor-sidebar').classList.add('hidden');
-    document.getElementById('game-container').style.display = 'block';
-    document.getElementById('btn-pause').style.display = 'block';
     
-    // Always show mobile controls on touch devices, but still allow mouse use
-    if (isTouchDevice) {
-        document.getElementById('mobile-controls').style.display = 'flex';
-    }
-    
+    // UI Mode transition
+    if (typeof setUIMode === 'function') setUIMode('GAME');
+
     // Add a listener to request pointer lock on first click for better reliability
     const clickToLock = () => {
         if (gameActive) { // Lock even if touch is available
@@ -165,10 +160,6 @@ function startGameEngine() {
 
 function stopGame() {
     gameActive = false;
-    document.getElementById('game-container').style.display = 'none';
-    document.getElementById('mobile-controls').style.display = 'none';
-    document.getElementById('btn-pause').style.display = 'none';
-    
     AudioEngine.stopMusic();
     
     if (document.pointerLockElement) {
@@ -180,8 +171,8 @@ function stopGame() {
         animationFrameId = null;
     }
     
-    // Default back to editor, but main.js can override
-    document.getElementById('editor-sidebar').classList.remove('hidden');
+    // UI Mode transition back to Editor
+    if (typeof setUIMode === 'function') setUIMode('EDITOR');
     renderUI();
 }
 

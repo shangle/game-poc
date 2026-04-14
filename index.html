@@ -108,7 +108,7 @@
             <div id="asset-library">
                 <div id="library-header">
                     <span>ASSETS</span>
-                    <button onclick="addNewAssetPrompt()" class="bg-blue-600 hover:bg-blue-500 w-6 h-6 rounded-md flex items-center justify-center text-lg font-bold">+</button>
+                    <button onclick="addNewAssetPrompt()" class="bg-blue-600 hover:bg-blue-500 w-8 h-8 rounded-md flex items-center justify-center text-xl font-bold">+</button>
                 </div>
                 <div id="library-content"></div>
             </div>
@@ -183,7 +183,7 @@
         <div class="wizard-card">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-xl font-black text-blue-500 uppercase tracking-tighter">New Asset Wizard</h2>
-                <button onclick="closeWizard()" class="text-slate-500 hover:text-white">✕</button>
+                <button onclick="document.getElementById('asset-wizard').classList.add('hidden')" class="text-slate-500 hover:text-white">✕</button>
             </div>
 
             <!-- Step 1: Type Selection -->

@@ -20,20 +20,22 @@ A modular, web-based 3D retro game engine and visual level editor.
 
 ## 📝 Recent Changes (Log)
 - **2026-04-13:** 
-    - Initialized `GEMINI.md` for project tracking.
-    - Fixed "Black Box" terminal font rendering (User side).
-    - Fixed **UI Leak**: Added `.hidden` with `!important` to ensure editor UI disappears during gameplay.
-    - Added **Toolbar Labels**: Left toolbar now shows text labels (Home, Entities, etc.) for better clarity.
-    - Implemented **Asset Wizard**: Replaced the simple prompt with a 2-step wizard for creating new assets (Category -> Details).
-    - Added **Zoom Controls**: Grid editor now supports zooming in/out.
+    - **Code Audit & Simplification**: Centralized all screen transitions into a single `setUIMode(mode)` function in `main.js`. This eliminates the "UI Leak" where the editor would remain visible during gameplay.
+    - **Toolbar Fix**: Corrected CSS flexbox behavior for the left toolbar. Buttons are now fixed at 64x64px with text labels centered below icons.
+    - **Asset Wizard Fix**: Corrected Wizard visibility and ensured the "Add Asset" (+) button triggers the 2-step process correctly.
+    - Added `.hidden { display: none !important; }` to the core CSS to prevent state conflicts.
 
 ## 📋 Roadmap / TODO
 
-### 🐛 Bug Fixes
-- [ ] **Mouse Capture:** Further testing on Chromebook/Mouse to ensure Pointer Lock is consistent.
-- [ ] **Viewport Scaling:** Ensure Three.js canvas handles window resizing perfectly.
+### 🚨 URGENT / REGRESSIONS
+- [x] **UI Leak (Main Menu):** Resolved via `setUIMode`.
+- [x] **Toolbar Layout:** Labels centered and buttons resized.
+- [x] **Wizard visibility:** Asset Creation Wizard now triggers correctly from the UI.
+- [x] **Code Audit:** UI state management centralized.
 
-### 🎨 Title Screen & UX
+### 🐛 Bug Fixes
+...
+
 - [x] **Polished Title Screen:** Added versioning, controls guide, and GitHub link.
 - [ ] **Control Configurator:** Allow users to remap movement/action keys. (Big Task)
 
