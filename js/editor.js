@@ -198,7 +198,16 @@ function openInspector(id) {
     const addField = (label, key, type = 'text') => {
         const group = document.createElement('div');
         group.className = 'input-group';
-        group.innerHTML = `<label>${label}</label>`;
+        
+        let labelHtml = `<label>${label}</label>`;
+        if (key === 'tex') {
+            labelHtml = `<div class="flex justify-between items-center mb-1">
+                <label class="!mb-0">${label}</label>
+                <a href="https://shangle.me/pixurl/" target="_blank" class="text-[9px] text-blue-400 font-bold hover:underline tracking-tighter">CREATE WITH PIXURL</a>
+            </div>`;
+        }
+        group.innerHTML = labelHtml;
+
         const input = document.createElement('input');
         input.type = type;
         input.value = (key === 'tex') ? (gameData.assets[item.tex] || '') : (item[key] || '');

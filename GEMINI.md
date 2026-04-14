@@ -17,10 +17,13 @@ A modular, web-based 3D retro game engine and visual level editor.
 - [x] Mobile HUD & Touch Controls
 - [x] Audio Engine
 - [x] URL-based level sharing (Base64)
-
 ## 📝 Recent Changes (Log)
 - **2026-04-13:** 
+    - **v2.1 Bump**: Updated Home Screen version to v2.1 for clarity.
+    - **Pixurl Integration**: Added "CREATE WITH PIXURL" helper links to both the Asset Wizard and the Inspector texture fields.
     - **Code Audit & Simplification**: Centralized all screen transitions into a single `setUIMode(mode)` function in `main.js`. This eliminates the "UI Leak" where the editor would remain visible during gameplay.
+...
+
     - **Toolbar Fix**: Corrected CSS flexbox behavior for the left toolbar. Buttons are now fixed at 64x64px with text labels centered below icons.
     - **Asset Wizard Fix**: Corrected Wizard visibility and ensured the "Add Asset" (+) button triggers the 2-step process correctly.
     - Added `.hidden { display: none !important; }` to the core CSS to prevent state conflicts.

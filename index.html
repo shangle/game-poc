@@ -17,7 +17,7 @@
     <div id="boot-screen" class="fullscreen-overlay">
         <div class="text-center p-6 w-full max-w-xl">
             <h1 id="boot-title" class="title-text mb-2">RETRO<br>ENGINE</h1>
-            <p class="text-blue-400 font-bold tracking-[0.3em] text-sm mb-12 uppercase">STUDIO v2.0</p>
+            <p class="text-blue-400 font-bold tracking-[0.3em] text-sm mb-12 uppercase">STUDIO v2.1</p>
             
             <div class="flex flex-col md:flex-row gap-6 mb-16 justify-center">
                 <button onclick="AudioEngine.resume(); playDemo();" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-6 rounded-2xl font-black text-2xl shadow-[0_8px_0_#1d4ed8] active:translate-y-1 active:shadow-none transition-all">
@@ -225,7 +225,10 @@
                     <input type="text" id="wizard-name" placeholder="e.g. Stone Wall">
                 </div>
                 <div class="input-group">
-                    <label>Texture URL (Optional)</label>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="!mb-0">Texture URL (Optional)</label>
+                        <a href="https://shangle.me/pixurl/" target="_blank" class="text-[9px] text-blue-400 font-bold hover:underline tracking-tighter">CREATE WITH PIXURL</a>
+                    </div>
                     <input type="text" id="wizard-tex" placeholder="https://...">
                 </div>
                 <div class="flex gap-3 mt-8">
