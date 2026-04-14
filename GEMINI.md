@@ -18,6 +18,9 @@ A modular, web-based 3D retro game engine and visual level editor.
 - [x] Audio Engine
 ## 📝 Recent Changes (Log)
 - **2026-04-13:** 
+    - **v0.2.2-alpha Release**: Rolled back versioning to reflect pre-1.0 development status.
+    - **Documentation Site**: Created `docs.html` as a user-facing technical guide.
+    - **GitHub README**: Added a comprehensive `README.md` with status warnings and navigation.
     - **Landing Page**: Created a modern, professional landing page (`index.html`) with a "Launch Engine" call-to-action.
     - **Project Documentation**: Created `DOCS.md` with a detailed breakdown of the `gameData` JSON structure and a mandatory update reminder.
     - **Embedded PixUrl**: Replaced external links with embedded `<pixurl-utility>` components in the Wizard and Inspector. Added a global listener to handle processed images.
