@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Future: Generating Games with LLMs and Image Templates - Retro Engine Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .prose p { margin-bottom: 1.5em; line-height: 1.8; font-size: 1.125rem; color: #94a3b8; }
+        .prose h2 { font-size: 2rem; font-weight: 900; margin-top: 2em; margin-bottom: 1em; color: #f8fafc; }
+        .gradient-text { background: linear-gradient(to right, #a855f7, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-50">
+        <div class="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="font-black text-sm tracking-widest text-slate-400 hover:text-white uppercase transition-colors">
+                ← Back to Blog
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-3xl mx-auto px-6 py-16 w-full">
+        <p class="text-blue-500 font-black tracking-widest uppercase mb-4 text-sm">Post 6 • The Future</p>
+        <h1 class="text-4xl md:text-5xl font-black mb-12 tracking-tight leading-tight">The Future: Generating Games with LLMs and Image Templates</h1>
+        
+        <div class="prose">
+            <p>Our journey began with encoding images into URLs. Now, we are looking at the inverse: translating images into fully playable, interactive 3D worlds using Large Language Models (LLMs).</p>
+            
+            <p>The ultimate goal of the Retro Engine architecture is to empower an LLM to <strong>create a game you can play instantly.</strong></p>
+
+            <h2>The Vision: Prompt to Play</h2>
+            <p>Imagine providing an AI with a simple prompt: <em>"A spooky dungeon with a central treasure room, surrounded by goblin guards."</em></p>
+            
+            <p>Rather than the AI trying to write thousands of lines of complex Three.js code, our engine allows the AI to simply generate a <strong>JSON state map</strong>. Because our engine handles all the rendering, physics, and collision logic, the AI only needs to know <em>where</em> things go, not <em>how</em> to draw them.</p>
+
+            <h2>Image Templates as Blueprints</h2>
+            <p>Taking this a step further, an LLM with vision capabilities can analyze an <span class="gradient-text">Image Template</span>. A user could draw a simple 14x14 grid in MS Paint or via a web tool:</p>
+            <ul>
+                <li>Black pixels = Walls</li>
+                <li>Blue pixel = Player Spawn</li>
+                <li>Red pixels = Enemies</li>
+                <li>Green pixel = Exit</li>
+            </ul>
+            
+            <p>The AI acts as the translator. It looks at the image template, maps the precise positions for players, bad guys, floors, and walls, and trivially compiles this into our engine's format. The result is imported seamlessly, and the user can immediately begin playing.</p>
+            
+            <div class="bg-slate-800/50 rounded-2xl p-8 my-10 border border-slate-700">
+                <h3 class="text-xl font-bold text-white mb-4">Local AI, Global Capabilities</h3>
+                <p class="!mb-0 text-base text-slate-300">This engine represents a shift in software development. It is one in hopefully a series of small, local applications that leverage the immense power of AI. The software itself is lightweight, but when paired with an LLM's ability to generate data, it becomes infinitely expansive.</p>
+            </div>
+            
+            <p>The barrier to game creation is no longer code. It's simply imagination.</p>
+        </div>
+    </main>
+</body>
+</html>

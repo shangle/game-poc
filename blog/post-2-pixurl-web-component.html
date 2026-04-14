@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidequest: The Launch of the &lt;pix-url&gt; Web Component - Retro Engine Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .prose p { margin-bottom: 1.5em; line-height: 1.8; font-size: 1.125rem; color: #94a3b8; }
+        .prose h2 { font-size: 2rem; font-weight: 900; margin-top: 2em; margin-bottom: 1em; color: #f8fafc; }
+        .prose code { color: #60a5fa; background: rgba(59, 130, 246, 0.1); padding: 0.2em 0.4em; border-radius: 0.25rem; font-size: 0.9em; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-50">
+        <div class="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="font-black text-sm tracking-widest text-slate-400 hover:text-white uppercase transition-colors">
+                ← Back to Blog
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-3xl mx-auto px-6 py-16 w-full">
+        <p class="text-blue-500 font-black tracking-widest uppercase mb-4 text-sm">Post 2 • Early 2026</p>
+        <h1 class="text-4xl md:text-5xl font-black mb-12 tracking-tight leading-tight">Sidequest: The Launch of the &lt;pix-url&gt; Web Component</h1>
+        
+        <div class="prose">
+            <p>Once we proved that we could encode entire pixel art sprites directly into URL strings, we realized we needed a way to display them effortlessly across the web. The URL string was essentially a piece of compressed memory, but developers needed a visual interface.</p>
+            
+            <h2>Enter the Web Component</h2>
+            <p>Instead of building a heavy React library or a complex Vue component, we leaned into the raw power of the browser. We built the <code>&lt;pix-url&gt;</code> custom HTML element. This was a massive side quest that changed how we approached rendering.</p>
+            
+            <p>By encapsulating the decoding algorithm inside a native Web Component, any developer could simply drop a tag like <code>&lt;pix-url src="v1-A..."&gt;&lt;/pix-url&gt;</code> into their HTML, and a pixel-perfect HTML5 canvas would render the image.</p>
+            
+            <div class="bg-slate-800/50 rounded-2xl p-8 my-10 border border-slate-700">
+                <h3 class="text-xl font-bold text-white mb-4">Why Web Components?</h3>
+                <p class="!mb-0 text-base text-slate-300">Framework independence. The &lt;pix-url&gt; element is framework-agnostic. Whether you're building with Vanilla JS, Angular, or Svelte, the browser knows how to render it natively. This philosophy of "lightweight, native tech" became the guiding principle for the entire Retro Engine Studio project.</p>
+            </div>
+            
+            <p>This side quest was the critical bridging gap between static art and a dynamic engine. The ability to load visual data dynamically via string states is what makes our current Level Editor's URL sharing feature possible.</p>
+        </div>
+    </main>
+</body>
+</html>

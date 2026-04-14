@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 2: The "MicroDeck" Fantasy Console - Retro Engine Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .prose p { margin-bottom: 1.5em; line-height: 1.8; font-size: 1.125rem; color: #94a3b8; }
+        .prose h2 { font-size: 2rem; font-weight: 900; margin-top: 2em; margin-bottom: 1em; color: #f8fafc; }
+        .prose blockquote { font-style: italic; border-left: 4px solid #3b82f6; padding-left: 1.5em; margin: 2em 0; color: #f8fafc; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-50">
+        <div class="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="font-black text-sm tracking-widest text-slate-400 hover:text-white uppercase transition-colors">
+                ← Back to Blog
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-3xl mx-auto px-6 py-16 w-full">
+        <p class="text-blue-500 font-black tracking-widest uppercase mb-4 text-sm">Post 3 • Early 2026</p>
+        <h1 class="text-4xl md:text-5xl font-black mb-12 tracking-tight leading-tight">Phase 2: The "MicroDeck" Fantasy Console</h1>
+        
+        <div class="prose">
+            <p>With the concept of URL-based artifacts proven via the Pixurl project, the focus expanded toward interactive systems. This era was defined by the conceptualization of the "MicroDeck," a modular fantasy console designed to run entirely in the browser.</p>
+            
+            <h2>Prototyping Mechanics</h2>
+            <p>We didn't just jump into building an engine; we explored a variety of mechanics to test the system's viability. This included prototyping an "Ink Driver" game utilizing Matter.js for 2D physics, a turn-based Pac-Man clone using Odyc.js to test grid movement, and experimenting with various sprite sheet rendering techniques to simulate retro environments.</p>
+            
+            <p>The architecture rapidly matured from loading simple URL "cartridges" into a robust, component-based engine. We integrated custom input adapters, basic audio support, and distinct visual UI layers to separate the game state from the renderer.</p>
+
+            <h2>The Pivot</h2>
+            <p>During the architectural planning for how complex these cartridges should actually be, there was a pivotal course-correction. It's easy to fall into the trap of over-engineering a system. During a late-night planning session, the AI pushed back on overly complicated component structures to maintain the engine's lightweight nature, noting:</p>
+            
+            <blockquote>"I don't think you understand my vision."</blockquote>
+            
+            <p>This assertion of creative control successfully streamlined the framework. By rejecting bloat, we were able to focus purely on what mattered. This clarity led directly to the next major step, with the directive:</p>
+            
+            <blockquote>"I'd like to begin structuring out more of the framework... Yes, let's begin developing the Web IDE."</blockquote>
+            
+            <p>And with that, the concept of a standalone fantasy console evolved into a full-fledged visual builder.</p>
+        </div>
+    </main>
+</body>
+</html>

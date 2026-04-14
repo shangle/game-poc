@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started: Building with Gemini CLI & GitHub - Retro Engine Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .prose p { margin-bottom: 1.5em; line-height: 1.8; font-size: 1.125rem; color: #94a3b8; }
+        .prose h2 { font-size: 2rem; font-weight: 900; margin-top: 2em; margin-bottom: 1em; color: #f8fafc; }
+        .prose h3 { font-size: 1.5rem; font-weight: 700; margin-top: 1.5em; margin-bottom: 0.5em; color: #f8fafc; }
+        .prose code { color: #60a5fa; background: rgba(59, 130, 246, 0.1); padding: 0.2em 0.4em; border-radius: 0.25rem; font-size: 0.9em; }
+        .prose pre { background: #0f172a; padding: 1.5em; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 1.5em; border: 1px solid #1e293b; }
+        .prose pre code { background: none; color: #e2e8f0; padding: 0; }
+        .prose blockquote { font-style: italic; border-left: 4px solid #f59e0b; padding-left: 1.5em; margin: 2em 0; color: #f8fafc; background: rgba(245, 158, 11, 0.05); padding: 1em 1.5em; border-radius: 0 0.5rem 0.5rem 0; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-50">
+        <div class="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="font-black text-sm tracking-widest text-slate-400 hover:text-white uppercase transition-colors">
+                ← Back to Blog
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-3xl mx-auto px-6 py-16 w-full">
+        <p class="text-blue-500 font-black tracking-widest uppercase mb-4 text-sm">Post 5 • Spring 2026</p>
+        <h1 class="text-4xl md:text-5xl font-black mb-12 tracking-tight leading-tight">Getting Started: Building with Gemini CLI & GitHub</h1>
+        
+        <div class="prose">
+            <p>You don't need to be a senior programmer to build amazing things anymore. The era of staring at blank text editors trying to memorize syntax is over. Today, you are a director, an orchestrator. All you need is an idea, an AI assistant, and the willingness to iterate.</p>
+            
+            <p>This guide will show you exactly how to replicate our workflow to build your own applications using <strong>Gemini CLI</strong>.</p>
+
+            <h2>Step 1: Installing Gemini CLI</h2>
+            <p>First, you need to install the tool. Open your computer's terminal (or command prompt) and run this command (assuming you have Node.js installed):</p>
+            <pre><code>npm install -g @google/gemini-cli</code></pre>
+            
+            <p>Once installed, you can start your AI assistant by simply typing <code>gemini</code> in your terminal.</p>
+
+            <h2>Step 2: Authenticating and GitHub</h2>
+            <p>To let the AI help you save your work to the internet, you'll want to use GitHub. You can literally ask Gemini CLI to help you set this up!</p>
+            <p>Type this into your Gemini CLI prompt:</p>
+            <pre><code>"I want to start a new project. Can you help me initialize a git repository and connect it to my GitHub account? Walk me through the steps."</code></pre>
+            <p>The AI will guide you through the process, and in many cases, can execute the necessary terminal commands for you safely.</p>
+
+            <h2>Step 3: The Secret to Prompting (Iteration)</h2>
+            <p>The biggest mistake beginners make is asking the AI to "build a whole game" in one sentence. <strong>Gemini CLI is not magic; it's a collaborator.</strong></p>
+            
+            <div class="bg-slate-800/50 rounded-2xl p-8 my-10 border border-slate-700">
+                <h3 class="text-xl font-bold text-white mb-4 !mt-0">The Golden Loop</h3>
+                <ol>
+                    <li><strong>Command:</strong> "Create a simple index.html with a black background and a red square in the middle."</li>
+                    <li><strong>Review:</strong> Open the file in your browser. Does it look right?</li>
+                    <li><strong>Iterate:</strong> "That looks good. Now, make the red square move to the right when I press the 'D' key."</li>
+                </ol>
+            </div>
+
+            <h2>What If I Get An Error?</h2>
+            <p>Errors are normal. They are just feedback. If your code doesn't work, or if your terminal throws a massive wall of red text, <strong>do not panic.</strong></p>
+            
+            <blockquote>
+                <strong>Pro Tip:</strong> Copy the entire error message, paste it directly into Gemini CLI, and ask: "I got this error when I tried to run the game. How do I fix it?" The AI will almost always know exactly what went wrong and fix the code for you.
+            </blockquote>
+            
+            <p>Remember, the tool (Gemini CLI) is just the vehicle. Your ability to prompt, review, and iterate is what actually builds the game.</p>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Blog - Retro Engine Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .gradient-text { background: linear-gradient(to right, #60a5fa, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="font-black text-xl tracking-tighter text-blue-500 uppercase flex items-center gap-2">
+                <span>Retro Engine</span> <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full ml-2">Blog</span>
+            </a>
+            <a href="https://github.com/shangle/game-poc" class="text-sm font-bold text-slate-400 hover:text-white transition-colors">GitHub</a>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-4xl mx-auto px-6 py-12 w-full">
+        <h1 class="text-5xl font-black mb-4 tracking-tight"><span class="gradient-text">The Developer's Journey</span></h1>
+        <p class="text-xl text-slate-400 mb-16 font-medium max-w-2xl">Chronicling the evolution of Retro Engine Studio from a decentralized pixel art experiment to a full-fledged AI-assisted Web IDE.</p>
+
+        <div class="grid gap-8">
+            <!-- Article 6 -->
+            <article class="bg-slate-800/50 border border-slate-700/50 rounded-3xl p-8 hover:border-blue-500/30 transition-all group">
+                <p class="text-blue-400 font-bold text-sm tracking-widest uppercase mb-3">Post 6</p>
+                <h2 class="text-3xl font-black mb-4 group-hover:text-blue-400 transition-colors"><a href="post-6-ai-game-creation.html">The Future: Generating Games with LLMs and Image Templates</a></h2>
+                <p class="text-slate-400 text-lg mb-6 leading-relaxed">Imagine prompting an AI with a simple layout sketch, and instantly getting a fully playable 3D game. We explore how image templates and precise entity positioning make this possible.</p>
+                <a href="post-6-ai-game-creation.html" class="inline-flex items-center font-bold text-blue-500 hover:text-blue-400">Read Article →</a>
+            </article>
+
+            <!-- Article 5 -->
+            <article class="bg-slate-800/50 border border-slate-700/50 rounded-3xl p-8 hover:border-blue-500/30 transition-all group">
+                <p class="text-blue-400 font-bold text-sm tracking-widest uppercase mb-3">Post 5</p>
+                <h2 class="text-3xl font-black mb-4 group-hover:text-blue-400 transition-colors"><a href="post-5-gemini-cli-guide.html">Getting Started: Building with Gemini CLI & GitHub</a></h2>
+                <p class="text-slate-400 text-lg mb-6 leading-relaxed">You don't need to be a senior programmer to build amazing things. A step-by-step guide for non-coders on installing Gemini CLI and using AI prompting to orchestrate a game engine.</p>
+                <a href="post-5-gemini-cli-guide.html" class="inline-flex items-center font-bold text-blue-500 hover:text-blue-400">Read Article →</a>
+            </article>
+
+            <!-- Article 4 -->
+            <article class="bg-slate-800/50 border border-slate-700/50 rounded-3xl p-8 hover:border-blue-500/30 transition-all group">
+                <p class="text-blue-400 font-bold text-sm tracking-widest uppercase mb-3">Post 4</p>
+                <h2 class="text-3xl font-black mb-4 group-hover:text-blue-400 transition-colors"><a href="post-4-transition-to-1-0.html">Phase 3: Transitioning to 1.0 & The Web IDE</a></h2>
+                <p class="text-slate-400 text-lg mb-6 leading-relaxed">"We completed our proof of concept, now we need to develop our 1.0 game system." How all our disparate side quests merged into the `game-poc` repository.</p>
+                <a href="post-4-transition-to-1-0.html" class="inline-flex items-center font-bold text-blue-500 hover:text-blue-400">Read Article →</a>
+            </article>
+
+            <!-- Article 3 -->
+            <article class="bg-slate-800/50 border border-slate-700/50 rounded-3xl p-8 hover:border-blue-500/30 transition-all group">
+                <p class="text-blue-400 font-bold text-sm tracking-widest uppercase mb-3">Post 3</p>
+                <h2 class="text-3xl font-black mb-4 group-hover:text-blue-400 transition-colors"><a href="post-3-microdeck-fantasy-console.html">Phase 2: The "MicroDeck" Fantasy Console</a></h2>
+                <p class="text-slate-400 text-lg mb-6 leading-relaxed">From pure URLs to a component-based engine. Exploring an Ink Driver with Matter.js, a turn-based Pac-Man clone, and the pivot that defined our vision.</p>
+                <a href="post-3-microdeck-fantasy-console.html" class="inline-flex items-center font-bold text-blue-500 hover:text-blue-400">Read Article →</a>
+            </article>
+
+            <!-- Article 2 -->
+            <article class="bg-slate-800/50 border border-slate-700/50 rounded-3xl p-8 hover:border-blue-500/30 transition-all group">
+                <p class="text-blue-400 font-bold text-sm tracking-widest uppercase mb-3">Post 2</p>
+                <h2 class="text-3xl font-black mb-4 group-hover:text-blue-400 transition-colors"><a href="post-2-pixurl-web-component.html">Sidequest: The Launch of the &lt;pix-url&gt; Web Component</a></h2>
+                <p class="text-slate-400 text-lg mb-6 leading-relaxed">Taking our URL-based pixel compression and turning it into a reusable, framework-agnostic HTML element. The bridging gap between art and the engine.</p>
+                <a href="post-2-pixurl-web-component.html" class="inline-flex items-center font-bold text-blue-500 hover:text-blue-400">Read Article →</a>
+            </article>
+
+            <!-- Article 1 -->
+            <article class="bg-slate-800/50 border border-slate-700/50 rounded-3xl p-8 hover:border-blue-500/30 transition-all group">
+                <p class="text-blue-400 font-bold text-sm tracking-widest uppercase mb-3">Post 1</p>
+                <h2 class="text-3xl font-black mb-4 group-hover:text-blue-400 transition-colors"><a href="post-1-library-of-babel.html">Phase 1: The Pixurl Project & The Library of Babel</a></h2>
+                <p class="text-slate-400 text-lg mb-6 leading-relaxed">Our ambition was to build a decentralized library for pixel art. How strict constraints drove the creation of a recursive image reference algorithm packed into a URL.</p>
+                <a href="post-1-library-of-babel.html" class="inline-flex items-center font-bold text-blue-500 hover:text-blue-400">Read Article →</a>
+            </article>
+        </div>
+    </main>
+
+    <footer class="border-t border-slate-800 mt-20 py-12 text-center text-slate-500">
+        <p class="font-bold">Retro Engine Studio</p>
+    </footer>
+</body>
+</html>
