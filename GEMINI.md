@@ -1,5 +1,13 @@
 # Retro Engine Studio - Project Status
 
+## ⚖️ Rules of Engagement
+These mandates are foundational to this workspace and take precedence over default behaviors:
+1. **GitHub First:** Always push changes to GitHub. Use descriptive commits for every sub-task.
+2. **Web Components:** Prioritize `<custom-elements>` for all UI additions and modularity.
+3. **Testing:** Never consider a task complete without a passing Jest or Playwright test.
+4. **Issue Monitoring:** Start every session by checking `gh issue list`.
+5. **No-Code Vision:** Architect systems specifically for AI-generated maps (JSON/Grid Images).
+
 ## 🚀 Overview
 A modular, web-based 3D retro game engine and visual level editor.
 
@@ -16,36 +24,28 @@ A modular, web-based 3D retro game engine and visual level editor.
 - [x] Asset Library & Inspector
 - [x] Mobile HUD & Touch Controls
 - [x] Audio Engine
+- [x] URL-based level sharing (Base64)
+
 ## 📝 Recent Changes (Log)
 - **2026-04-13:** 
+    - **Global Standardization**: Created `~/.gemini/GEMINI.md` to establish cross-project rules.
     - **v0.2.2-alpha Release**: Rolled back versioning to reflect pre-1.0 development status.
     - **Documentation Site**: Created `docs.html` as a user-facing technical guide.
     - **GitHub README**: Added a comprehensive `README.md` with status warnings and navigation.
     - **Landing Page**: Created a modern, professional landing page (`index.html`) with a "Launch Engine" call-to-action.
-    - **Project Documentation**: Created `DOCS.md` with a detailed breakdown of the `gameData` JSON structure and a mandatory update reminder.
-    - **Embedded PixUrl**: Replaced external links with embedded `<pixurl-utility>` components in the Wizard and Inspector. Added a global listener to handle processed images.
-    - **Refactor**: Moved the core game engine to `launcher.html`.
-...
-
-    - **Pixurl Integration**: Added "CREATE WITH PIXURL" helper links to both the Asset Wizard and the Inspector texture fields.
-    - **Code Audit & Simplification**: Centralized all screen transitions into a single `setUIMode(mode)` function in `main.js`. This eliminates the "UI Leak" where the editor would remain visible during gameplay.
-...
-
-    - **Toolbar Fix**: Corrected CSS flexbox behavior for the left toolbar. Buttons are now fixed at 64x64px with text labels centered below icons.
-    - **Asset Wizard Fix**: Corrected Wizard visibility and ensured the "Add Asset" (+) button triggers the 2-step process correctly.
-    - Added `.hidden { display: none !important; }` to the core CSS to prevent state conflicts.
+    - **Project Documentation**: Created `DOCS.md` with a detailed breakdown of the `gameData` JSON structure.
+    - **Embedded PixUrl**: Replaced external links with embedded `<pixurl-utility>` components in the Wizard and Inspector.
+    - **Testing & CI/CD Pipeline**: Initialized npm, installed Jest for core logic tests, and Playwright for E2E UI testing. Added a GitHub Actions workflow.
+    - **Developer Blog**: Built a 6-part blog series chronicling the engine's evolution.
+    - **Code Audit & Simplification**: Centralized all screen transitions into a single `setUIMode(mode)` function.
 
 ## 📋 Roadmap / TODO
 
-### 🚨 URGENT / REGRESSIONS
-- [x] **UI Leak (Main Menu):** Resolved via `setUIMode`.
-- [x] **Toolbar Layout:** Labels centered and buttons resized.
-- [x] **Wizard visibility:** Asset Creation Wizard now triggers correctly from the UI.
-- [x] **Code Audit:** UI state management centralized.
-
 ### 🐛 Bug Fixes
-...
+- [ ] **Mouse Capture:** Further testing on Chromebook/Mouse to ensure Pointer Lock is consistent.
+- [ ] **Viewport Scaling:** Ensure Three.js canvas handles window resizing perfectly.
 
+### 🎨 Title Screen & UX
 - [x] **Polished Title Screen:** Added versioning, controls guide, and GitHub link.
 - [ ] **Control Configurator:** Allow users to remap movement/action keys. (Big Task)
 
