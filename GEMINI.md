@@ -18,51 +18,31 @@ A modular, web-based 3D retro game engine and visual level editor.
 - **Deployment:** GitHub Pages (https://shangle.me/game-poc/)
 
 ## 📍 Current Progress
-- [x] Modular JS structure
-- [x] 3D Rendering Engine (Three.js)
-- [x] Grid-based Level Editor
-- [x] Asset Library & Inspector
-- [x] Mobile HUD & Touch Controls
-- [x] Audio Engine
-- [x] URL-based level sharing (Base64)
+- [x] **v2 Reboot:** Scaffolded clean architecture in `/v2/`
+- [x] **Modular JS structure** (v1 & v2)
+- [x] **3D Rendering Engine (Three.js)** (v1 & v2)
+- [x] **Cartridge System:** Implemented in v2 for modular level packs.
+- [x] **Vanilla CSS UI:** v2 now uses native CSS instead of Tailwind.
+- [x] **Web Component UI:** Title screen is now a custom element.
+- [x] Grid-based Level Editor (v1)
+- [x] Asset Library & Inspector (v1)
 
 ## 📝 Recent Changes (Log)
-- **2026-04-13:** 
-    - **Global Standardization**: Created `~/.gemini/GEMINI.md` to establish cross-project rules.
-    - **v0.2.2-alpha Release**: Rolled back versioning to reflect pre-1.0 development status.
-    - **Documentation Site**: Created `docs.html` as a user-facing technical guide.
-    - **GitHub README**: Added a comprehensive `README.md` with status warnings and navigation.
-    - **Landing Page**: Created a modern, professional landing page (`index.html`) with a "Launch Engine" call-to-action.
-    - **Project Documentation**: Created `DOCS.md` with a detailed breakdown of the `gameData` JSON structure.
-    - **Embedded PixUrl**: Replaced external links with embedded `<pixurl-utility>` components in the Wizard and Inspector.
-    - **Testing & CI/CD Pipeline**: Initialized npm, installed Jest for core logic tests, and Playwright for E2E UI testing. Added a GitHub Actions workflow.
-    - **Developer Blog**: Built a 6-part blog series chronicling the engine's evolution.
-    - **Code Audit & Simplification**: Centralized all screen transitions into a single `setUIMode(mode)` function.
+- **2026-05-06:**
+    - **Reboot Phase 1:** Started v2 development focused on "Game First".
+    - **v2 Scaffold:** Created clean directory structure in `/v2/`.
+    - **Cartridge System:** Defined `Cartridge` API for modular level data.
+    - **UI Overhaul:** Implemented `<game-title-screen>` Web Component.
+    - **Style Shift:** Moved to Vanilla CSS for the v2 interface.
 
 ## 📋 Roadmap / TODO
 
-### 🐛 Bug Fixes & Refactoring
-- [ ] **Tailwind Removal:** Strip out Tailwind classes and replace with clean, modern Vanilla CSS.
-- [ ] **PixUrl Fix:** Investigate and fix the failing PixUrl component load.
-- [ ] **UI Centralization:** Ensure all UI state changes route through `setUIMode`.
-- [ ] **Mouse Capture:** Further testing on Chromebook/Mouse to ensure Pointer Lock is consistent.
+### 🕹️ V2 Game Development
+- [ ] **Level Design:** Create 3 distinct levels for "Retro Quest".
+- [ ] **Asset Polish:** Finalize texture set for the v2 cartridge.
+- [ ] **Mobile HUD:** Re-implement v1 touch controls in v2.
+- [ ] **Audio Integration:** Re-link v1 audio engine to v2.
 
-### 🎨 UI/UX Redesign
-- [ ] **Modernization:** Redesign the interface to feel cleaner, sharper, modern, and fresh.
-- [x] **Polished Title Screen:** Added versioning, controls guide, and GitHub link.
-
-### 🛠 Editor Enhancements (Mario Maker Style)
-- [x] **Tool Clarity:** Added labels to the toolbar icons.
-- [ ] **Editor Modes:** Focus on making it simple for children, masterable for adults.
-    - [ ] Easy Mode (Simple interface, basic placement)
-    - [ ] Normal Mode (Standard features)
-    - [ ] Advanced Mode (Full JSON inspector & logic)
-
-### 🚀 Advanced Features
-- [x] **Save/Load:** Implement LocalStorage persistence.
-- [ ] **Level Packs:** Support for multiple levels and sequencing.
-- [ ] **AI Patterns:** Add more complex enemy behaviors.
-- [ ] **Texture Library:** Expand the default asset set.
-and sequencing.
-- [ ] **AI Patterns:** Add more complex enemy behaviors.
-- [ ] **Texture Library:** Expand the default asset set.
+### 🛠 Engine Evolution (Post-Game)
+- [ ] **Modular Editor:** Port the v1 editor to work with v2 cartridges.
+- [ ] **AI Behaviors:** Enhance enemy patterns.

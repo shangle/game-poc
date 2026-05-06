@@ -1,0 +1,134 @@
+:root {
+    --bg-dark: #020617;
+    --text-primary: #f8fafc;
+    --accent-blue: #0ea5e9;
+    --accent-red: #f43f5e;
+    --accent-amber: #eab308;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+#game-canvas-container {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* UI Overlays */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    background: radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.4) 0%, rgba(2, 6, 23, 0.9) 100%);
+    backdrop-blur: 5px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Retro Title Text */
+.title-text {
+    font-size: 6rem;
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    line-height: 0.8;
+    text-transform: uppercase;
+    text-shadow: 0 10px 0 rgba(14, 165, 233, 0.3);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.btn {
+    appearance: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 1.25rem 2.5rem;
+    border-radius: 1rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.1em;
+}
+
+.btn-primary {
+    background-color: var(--accent-blue);
+    color: white;
+    box-shadow: 0 6px 0 #0369a1;
+}
+
+.btn-primary:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #0369a1;
+}
+
+.btn-secondary {
+    background-color: #1e293b;
+    color: #94a3b8;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* HUD Styling */
+#hud {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    right: 2rem;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.hud-panel {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-blur: 10px;
+    padding: 1rem 1.5rem;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.hud-label {
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--accent-blue);
+    letter-spacing: 0.1em;
+}
+
+.hud-value {
+    font-size: 2rem;
+    font-weight: 900;
+}

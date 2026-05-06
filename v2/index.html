@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Retro Quest - V2</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Game Canvas -->
+    <div id="game-canvas-container" class="fullscreen"></div>
+
+    <!-- UI: Title Screen -->
+    <game-title-screen class="fullscreen"></game-title-screen>
+
+    <!-- UI: HUD -->
+    <div id="hud" class="hidden">
+        <div class="hud-panel">
+            <span class="hud-label">Health</span>
+            <span id="hp-value" class="hud-value">100</span>
+        </div>
+        <div class="hud-panel">
+            <span class="hud-label">Score</span>
+            <span id="score-value" class="hud-value">0</span>
+        </div>
+    </div>
+
+    <!-- UI: Win Overlay -->
+    <div id="win-overlay" class="overlay hidden">
+        <h2 class="title-text" style="color: #10b981;">VICTORY</h2>
+        <p style="font-weight: 900; margin-bottom: 2rem;">FINAL SCORE: <span id="final-score">0</span></p>
+        <button class="btn btn-primary" onclick="restartGame()">Play Again</button>
+    </div>
+
+    <!-- UI: Game Over Overlay -->
+    <div id="over-overlay" class="overlay hidden">
+        <h2 class="title-text" style="color: #ef4444;">WASTED</h2>
+        <button class="btn btn-primary" onclick="restartGame()">Try Again</button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/cartridge.js"></script>
+    <script src="js/title-screen.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
