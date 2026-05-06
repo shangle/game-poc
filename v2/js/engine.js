@@ -42,9 +42,12 @@ class GameEngine {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(this.renderer.domElement);
 
-        this.scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-        const pointLight = new THREE.PointLight(0xffffff, 0.8, 50);
-        this.camera.add(pointLight);
+        // GLOBAL LIGHTING
+        const ambient = new THREE.AmbientLight(0xffffff, 0.8);
+        this.scene.add(ambient);
+        
+        const pointLight = new THREE.PointLight(0xffffff, 1.0, 100);
+        this.camera.add(pointLight); // Point light follows camera
         this.scene.add(this.camera);
 
         window.addEventListener('resize', () => this.onResize());
@@ -125,15 +128,30 @@ class GameEngine {
         const loader = new THREE.TextureLoader();
 
         const getMat = (url, type) => {
-            const finalUrl = url.startsWith('http') ? url : this.createProceduralTexture(type);
-            const tex = loader.load(finalUrl);
+            const finalUrl = (url && url.startsWith('http')) ? url : this.createProceduralTexture(type);
+            const tex = loader.load(finalUrl, 
+                undefined, // onLoad
+                undefined, // onProgress
+                () => { // onError - Fallback to procedural
+                    tex.image = new Image();
+                    tex.image.src = this.createProceduralTexture(type);
+                    tex.needsUpdate = true;
+                }
+            );
             tex.magFilter = THREE.NearestFilter;
             return new THREE.MeshLambertMaterial({ map: tex });
         };
 
         const getSpriteMat = (url, type) => {
-            const finalUrl = url.startsWith('http') ? url : this.createProceduralTexture(type);
-            const tex = loader.load(finalUrl);
+            const finalUrl = (url && url.startsWith('http')) ? url : this.createProceduralTexture(type);
+            const tex = loader.load(finalUrl,
+                undefined, undefined,
+                () => {
+                    tex.image = new Image();
+                    tex.image.src = this.createProceduralTexture(type);
+                    tex.needsUpdate = true;
+                }
+            );
             tex.magFilter = THREE.NearestFilter;
             return new THREE.SpriteMaterial({ map: tex });
         };
