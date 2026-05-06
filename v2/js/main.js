@@ -10,14 +10,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const overOverlay = document.getElementById('over-overlay');
 
     // Initialize Engine
-    GameEngine.init(gameContainer);
-    GameEngine.loadCartridge(Cartridge);
+    gameEngine.init(gameContainer);
+    gameEngine.loadCartridge(Cartridge);
 
     // Event Listeners
     titleScreen.addEventListener('start-game', () => {
         titleScreen.classList.add('hidden');
         hud.classList.remove('hidden');
-        GameEngine.startLevel(0);
+        gameEngine.startLevel(0);
     });
 
     document.addEventListener('game-win', (e) => {
@@ -36,8 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
         winOverlay.classList.add('hidden');
         overOverlay.classList.add('hidden');
         titleScreen.classList.remove('hidden');
-        GameEngine.player.hp = 100;
-        GameEngine.player.score = 0;
-        GameEngine.updateHUD();
+        gameEngine.player.hp = 100;
+        gameEngine.player.score = 0;
+        gameEngine.updateHUD();
     };
 });

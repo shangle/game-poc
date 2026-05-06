@@ -292,4 +292,4 @@ class GameEngine {
     }
 }
 
-window.GameEngine = new GameEngine();
+window.gameEngine = new GameEngine();
