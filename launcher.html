@@ -23,7 +23,10 @@
             
             <div class="flex flex-col md:flex-row gap-6 mb-16 justify-center">
                 <button onclick="AudioEngine.resume(); playDemo();" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-6 rounded-2xl font-black text-2xl shadow-[0_8px_0_#1d4ed8] active:translate-y-1 active:shadow-none transition-all">
-                    PLAY GAME
+                    NEW GAME
+                </button>
+                <button id="btn-continue" onclick="AudioEngine.resume(); loadAndStart();" class="hidden flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-6 rounded-2xl font-black text-2xl shadow-[0_8px_0_#059669] active:translate-y-1 active:shadow-none transition-all">
+                    CONTINUE SAVED
                 </button>
                 <button onclick="AudioEngine.resume(); openEditor();" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-6 rounded-2xl font-black text-2xl shadow-[0_8px_0_#0f172a] active:translate-y-1 active:shadow-none transition-all border border-slate-700">
                     OPEN BUILDER
@@ -80,8 +83,14 @@
                 <button onclick="startGameEngine()" class="tool-btn" title="Play Game" style="background: #10b981; color: white;">
                     ► <span class="tool-label">Play</span>
                 </button>
-                <button onclick="downloadGame()" class="tool-btn" title="Save Project" style="background: #334155; color: white;">
-                    💾 <span class="tool-label">Save</span>
+                <button onclick="saveToLocalStorage()" class="tool-btn" title="Save to Browser" style="background: #10b981; color: white;">
+                    ☁ <span class="tool-label">Save</span>
+                </button>
+                <button onclick="loadFromLocalStorage()" class="tool-btn" title="Load from Browser" style="background: #0ea5e9; color: white;">
+                    ⚡ <span class="tool-label">Load</span>
+                </button>
+                <button onclick="downloadGame()" class="tool-btn" title="Download JSON" style="background: #334155; color: white;">
+                    💾 <span class="tool-label">File</span>
                 </button>
             </div>
 
@@ -176,6 +185,7 @@
     </div>
 
     <script src="js/audio.js"></script>
+    <script src="js/storage.js"></script>
     <script src="js/state.js"></script>
     <script src="js/assets.js"></script>
     <script src="js/engine.js"></script>

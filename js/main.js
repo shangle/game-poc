@@ -47,6 +47,22 @@ function showTitleScreen() {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
     }
+
+    // Check for saved game
+    const continueBtn = document.getElementById('btn-continue');
+    if (continueBtn) {
+        if (typeof hasSavedGame === 'function' && hasSavedGame()) {
+            continueBtn.classList.remove('hidden');
+        } else {
+            continueBtn.classList.add('hidden');
+        }
+    }
+}
+
+function loadAndStart() {
+    if (loadFromLocalStorage()) {
+        startGameEngine();
+    }
 }
 
 function playDemo() {

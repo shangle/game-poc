@@ -57,7 +57,7 @@ A modular, web-based 3D retro game engine and visual level editor.
     - [ ] Advanced Mode (Full JSON inspector & logic)
 
 ### 🚀 Advanced Features
-- [ ] **Save/Load:** Implement LocalStorage persistence.
+- [x] **Save/Load:** Implement LocalStorage persistence.
 - [ ] **Level Packs:** Support for multiple levels and sequencing.
 - [ ] **AI Patterns:** Add more complex enemy behaviors.
 - [ ] **Texture Library:** Expand the default asset set.

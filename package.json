@@ -6,6 +6,12 @@
     "test": "jest",
     "test:e2e": "npx playwright test"
   },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      ".spec.js"
+    ]
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
