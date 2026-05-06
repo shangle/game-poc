@@ -18,8 +18,7 @@ class GameTitleScreen extends HTMLElement {
                 justify-content: center;
                 width: 100%;
                 height: 100%;
-                background: radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.4) 0%, rgba(2, 6, 23, 0.9) 100%);
-                backdrop-blur: 8px;
+                background: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
                 color: #f8fafc;
                 font-family: 'Inter', system-ui, sans-serif;
             }
