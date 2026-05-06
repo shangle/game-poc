@@ -44,11 +44,16 @@ function init3D() {
 }
 
 function buildWorld() {
+    const level = getActiveLevel();
     cachedMaterials = {}; 
     scene.children = scene.children.filter(c => c.type === 'AmbientLight' || c.type === 'PerspectiveCamera');
     colliders = []; enemies = []; items = []; goalMesh = null;
     playerStats = { hp: 100, score: 0 }; updateHUD();
     document.getElementById('weapon-img').src = resolveAsset('gun');
+    
+    // Update Title if HUD supports it
+    const titleEl = document.getElementById('lvl-title-hud');
+    if (titleEl) titleEl.innerText = level.name;
 
     const planeGeo = new THREE.PlaneGeometry(TILE_SIZE, TILE_SIZE);
     const boxGeo = new THREE.BoxGeometry(TILE_SIZE, WALL_HEIGHT, TILE_SIZE);
@@ -58,23 +63,23 @@ function buildWorld() {
     for(let z = 0; z < GRID_SIZE; z++) {
         for(let x = 0; x < GRID_SIZE; x++) {
             const posX = x * TILE_SIZE; const posZ = z * TILE_SIZE;
-            const fId = gameData.map.floors[z][x];
+            const fId = level.map.floors[z][x];
             if(fId !== ID_EMPTY) {
-                const fData = gameData.palette.floors.find(i=>i.id===fId);
+                const fData = gamePack.globalPalette.floors.find(i=>i.id===fId);
                 if(fData) {
                     const mesh = new THREE.Mesh(planeGeo, getMaterial(fData.tex, false));
                     mesh.rotation.x = -Math.PI / 2; mesh.position.set(posX, 0, posZ); scene.add(mesh);
                 }
             }
-            const cId = gameData.map.ceils[z][x];
+            const cId = level.map.ceils[z][x];
             if(cId !== ID_EMPTY) {
-                const cData = gameData.palette.ceils.find(i=>i.id===cId);
+                const cData = gamePack.globalPalette.ceils.find(i=>i.id===cId);
                 if(cData) {
                     const mesh = new THREE.Mesh(planeGeo, getMaterial(cData.tex, false));
                     mesh.rotation.x = Math.PI / 2; mesh.position.set(posX, WALL_HEIGHT, posZ); scene.add(mesh);
                 }
             }
-            const eId = gameData.map.entities[z][x];
+            const eId = level.map.entities[z][x];
             if(eId === ID_PLAYER) { 
                 camera.position.set(posX, WALL_HEIGHT/2, posZ); playerSet = true;
             } 
@@ -83,10 +88,10 @@ function buildWorld() {
                 goalMesh.scale.set(8, 8, 1); goalMesh.position.set(posX, 4, posZ); scene.add(goalMesh);
             } 
             else {
-                const wData = gameData.palette.walls.find(i=>i.id===eId);
-                const enData = gameData.palette.enemies.find(i=>i.id===eId);
-                const oData = gameData.palette.objects.find(i=>i.id===eId);
-                const iData = gameData.palette.items.find(i=>i.id===eId);
+                const wData = gamePack.globalPalette.walls.find(i=>i.id===eId);
+                const enData = gamePack.globalPalette.enemies.find(i=>i.id===eId);
+                const oData = gamePack.globalPalette.objects.find(i=>i.id===eId);
+                const iData = gamePack.globalPalette.items.find(i=>i.id===eId);
 
                 if(wData) {
                     const mesh = new THREE.Mesh(boxGeo, getMaterial(wData.tex, false));
@@ -272,8 +277,26 @@ function gameLoop() {
     });
 
     if(goalMesh && camera.position.distanceTo(goalMesh.position) < 5) {
-        gameActive = false; AudioEngine.playSFX('win'); stopGame();
-        alert("Level Clear! Score: " + playerStats.score);
+        gameActive = false; AudioEngine.playSFX('win'); 
+        const level = getActiveLevel();
+        if (level.exits && level.exits.length > 0) {
+            // Take first exit for now
+            const exit = level.exits[0];
+            const nextLvlIndex = gamePack.levels.findIndex(l => l.id === exit.targetLevel);
+            if (nextLvlIndex !== -1) {
+                activeLevelIndex = nextLvlIndex;
+                alert("Advancing to " + getActiveLevel().name);
+                buildWorld();
+                gameActive = true;
+                if (!animationFrameId) gameLoop();
+            } else {
+                stopGame();
+                alert("Game Clear! Final Score: " + playerStats.score);
+            }
+        } else {
+            stopGame();
+            alert("Game Clear! Final Score: " + playerStats.score);
+        }
     }
 
     enemies.forEach(e => {

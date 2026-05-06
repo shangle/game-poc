@@ -23,17 +23,19 @@ function changeZoom(delta) {
 function renderUI() {
     renderLibrary();
     renderGrid();
-    document.getElementById('game-title-display').innerText = gameData.title;
+    document.getElementById('game-title-display').innerText = gamePack.metadata.title;
 }
 
 function saveHistory() {
-    mapHistory.push(JSON.stringify(gameData.map));
+    const level = getActiveLevel();
+    mapHistory.push(JSON.stringify(level.map));
     if (mapHistory.length > 20) mapHistory.shift();
 }
 
 function undo() {
+    const level = getActiveLevel();
     if (mapHistory.length > 0) {
-        gameData.map = JSON.parse(mapHistory.pop());
+        level.map = JSON.parse(mapHistory.pop());
         renderGrid();
     }
 }
@@ -41,8 +43,12 @@ function undo() {
 function setLayer(layer) {
     activeLayer = layer;
     document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('btn-layer-' + layer).classList.add('active');
-    document.getElementById('grid-label').innerText = layer.toUpperCase();
+    const btn = document.getElementById('btn-layer-' + layer);
+    if (btn) btn.classList.add('active');
+    
+    const label = document.getElementById('grid-label');
+    if (label) label.innerText = layer.toUpperCase();
+    
     if (layer === 'entities') switchLibTab('entities');
     else switchLibTab('tiles');
     renderGrid();
@@ -50,14 +56,12 @@ function setLayer(layer) {
 
 function switchLibTab(tab) {
     activeLibTab = tab;
-    document.querySelectorAll('.lib-tab').forEach(t => t.classList.remove('active'));
-    const target = document.getElementById(tab === 'entities' ? 'tab-ent' : 'tab-tile');
-    if (target) target.classList.add('active');
     renderLibrary();
 }
 
 function renderLibrary() {
     const container = document.getElementById('library-content');
+    if (!container) return;
     container.innerHTML = '';
 
     const createCard = (id, name, texKey, color, isSystem = false) => {
@@ -89,16 +93,18 @@ function renderLibrary() {
         createCard(ID_PLAYER, "PLAYER", "none", "#3b82f6", true);
         createCard(ID_GOAL, "EXIT", "goal", "#22c55e", true);
         ['walls', 'enemies', 'objects', 'items'].forEach(cat => {
-            gameData.palette[cat].forEach(i => createCard(i.id, i.name, i.tex, i.color));
+            gamePack.globalPalette[cat].forEach(i => createCard(i.id, i.name, i.tex, i.color));
         });
     } else {
         const cat = activeLayer === 'ceils' ? 'ceils' : 'floors';
-        gameData.palette[cat].forEach(i => createCard(i.id, i.name, i.tex, i.color));
+        gamePack.globalPalette[cat].forEach(i => createCard(i.id, i.name, i.tex, i.color));
     }
 }
 
 function renderGrid() {
+    const level = getActiveLevel();
     const container = document.getElementById('grid-container');
+    if (!container) return;
     container.style.gridTemplateColumns = `repeat(${GRID_SIZE}, 1fr)`;
     container.innerHTML = '';
     
@@ -115,17 +121,17 @@ function renderGrid() {
         if (activeLayer === 'entities') {
             if (activeAssetId === ID_PLAYER || activeAssetId === ID_GOAL) {
                 for(let r=0; r<GRID_SIZE; r++) for(let c=0; c<GRID_SIZE; c++) 
-                    if(gameData.map.entities[r][c] === activeAssetId) gameData.map.entities[r][c] = 0;
+                    if(level.map.entities[r][c] === activeAssetId) level.map.entities[r][c] = 0;
             }
-            if (gameData.map.entities[z][x] !== activeAssetId) {
+            if (level.map.entities[z][x] !== activeAssetId) {
                 saveHistory();
-                gameData.map.entities[z][x] = activeAssetId;
+                level.map.entities[z][x] = activeAssetId;
             }
         } else {
             const mapLayer = activeLayer === 'floors' ? 'floors' : 'ceils';
-            if (gameData.map[mapLayer][z][x] !== activeAssetId) {
+            if (level.map[mapLayer][z][x] !== activeAssetId) {
                 saveHistory();
-                gameData.map[mapLayer][z][x] = activeAssetId;
+                level.map[mapLayer][z][x] = activeAssetId;
             }
         }
         renderGrid();
@@ -141,16 +147,18 @@ function renderGrid() {
             cell.className = 'grid-cell';
             cell.dataset.pos = `${z},${x}`;
             
-            const floorId = gameData.map.floors[z][x];
-            const ceilId = gameData.map.ceils[z][x];
-            const entId = gameData.map.entities[z][x];
+            const floorId = level.map.floors[z][x];
+            const ceilId = level.map.ceils[z][x];
+            const entId = level.map.entities[z][x];
 
-            const f = gameData.palette.floors.find(i=>i.id===floorId);
+            const f = gamePack.globalPalette.floors.find(i=>i.id===floorId);
             if (f) cell.style.backgroundImage = `url(${resolveAsset(f.tex)})`;
             
             if (entId !== ID_EMPTY) {
                 const overlay = document.createElement('div');
-                overlay.className = 'absolute inset-0 pointer-events-none';
+                overlay.style.position = 'absolute';
+                overlay.style.inset = '0';
+                overlay.style.pointerEvents = 'none';
                 if (entId === ID_PLAYER) overlay.style.backgroundColor = 'rgba(59, 130, 246, 0.5)';
                 else if (entId === ID_GOAL) overlay.style.backgroundImage = `url(${resolveAsset('goal')})`;
                 else {
@@ -164,9 +172,12 @@ function renderGrid() {
             }
 
             if (activeLayer === 'ceils') {
-                const c = gameData.palette.ceils.find(i=>i.id===ceilId);
+                const c = gamePack.globalPalette.ceils.find(i=>i.id===ceilId);
                 const ceilOverlay = document.createElement('div');
-                ceilOverlay.className = 'absolute inset-0 pointer-events-none opacity-50';
+                ceilOverlay.style.position = 'absolute';
+                ceilOverlay.style.inset = '0';
+                ceilOverlay.style.pointerEvents = 'none';
+                ceilOverlay.style.opacity = '0.5';
                 if (c) ceilOverlay.style.backgroundImage = `url(${resolveAsset(c.tex)})`;
                 cell.appendChild(ceilOverlay);
             }
@@ -177,9 +188,9 @@ function renderGrid() {
 }
 
 function findAssetInPalette(id) {
-    for (let cat in gameData.palette) {
-        if (Array.isArray(gameData.palette[cat])) {
-            const found = gameData.palette[cat].find(i => i.id === id);
+    for (let cat in gamePack.globalPalette) {
+        if (Array.isArray(gamePack.globalPalette[cat])) {
+            const found = gamePack.globalPalette[cat].find(i => i.id === id);
             if (found) return { item: found, category: cat };
         }
     }
@@ -196,8 +207,8 @@ function openInspector(id) {
     container.innerHTML = '';
 
 // LISTEN FOR PIXURL OUTPUT
-document.addEventListener('image-processed', (e) => {
-    const dataUrl = e.detail.dataUrl;
+window.addEventListener('pixurl-output', (e) => {
+    const dataUrl = e.detail;
     console.log("PixUrl Processed:", dataUrl);
     
     // Auto-fill active context
@@ -231,10 +242,13 @@ const addField = (label, key, type = 'text') => {
     const input = document.createElement('input');
     input.type = type;
     if (key === 'tex') input.dataset.key = 'tex';
-    input.value = (key === 'tex') ? (gameData.assets[item.tex] || '') : (item[key] || '');
+    input.value = (key === 'tex') ? (resolveAsset(item.tex) || '') : (item[key] || '');
         
         input.onchange = (e) => {
-            if (key === 'tex') gameData.assets[item.tex] = e.target.value;
+            if (key === 'tex') {
+                if (!gamePack.metadata.assets) gamePack.metadata.assets = {};
+                gamePack.metadata.assets[item.tex] = e.target.value;
+            }
             else item[key] = type === 'number' ? Number(e.target.value) : e.target.value;
             renderUI();
         };
@@ -301,9 +315,9 @@ function finalizeWizard() {
     const tex = document.getElementById('wizard-tex').value || "";
     
     let maxId = 0;
-    for (let c in gameData.palette) {
-        if (Array.isArray(gameData.palette[c])) {
-            gameData.palette[c].forEach(i => maxId = Math.max(maxId, i.id));
+    for (let c in gamePack.globalPalette) {
+        if (Array.isArray(gamePack.globalPalette[c])) {
+            gamePack.globalPalette[c].forEach(i => maxId = Math.max(maxId, i.id));
         }
     }
     
@@ -314,9 +328,12 @@ function finalizeWizard() {
     if (wizardType === 'enemies') { newItem.hp = 100; newItem.speed = 0.05; }
     if (wizardType === 'items') { newItem.type = 'score'; newItem.value = 100; }
 
-    if (tex) gameData.assets[newItem.tex] = tex;
+    if (tex) {
+        if (!gamePack.metadata.assets) gamePack.metadata.assets = {};
+        gamePack.metadata.assets[newItem.tex] = tex;
+    }
     
-    gameData.palette[wizardType].push(newItem);
+    gamePack.globalPalette[wizardType].push(newItem);
     activeAssetId = id;
     
     closeWizard();
@@ -326,9 +343,9 @@ function finalizeWizard() {
 
 function deleteActiveAsset() {
     if (!inspectorTargetId) return;
-    for (let cat in gameData.palette) {
-        const idx = gameData.palette[cat].findIndex(i => i.id === inspectorTargetId);
-        if (idx !== -1) { gameData.palette[cat].splice(idx, 1); break; }
+    for (let cat in gamePack.globalPalette) {
+        const idx = gamePack.globalPalette[cat].findIndex(i => i.id === inspectorTargetId);
+        if (idx !== -1) { gamePack.globalPalette[cat].splice(idx, 1); break; }
     }
     closeInspector();
     activeAssetId = ID_EMPTY;
@@ -337,8 +354,8 @@ function deleteActiveAsset() {
 
 function downloadGame() {
     const a = document.createElement('a');
-    a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(gameData));
-    a.download = gameData.title.replace(/\s+/g, '_') + ".json";
+    a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(gamePack));
+    a.download = gamePack.metadata.title.replace(/\s+/g, '_') + ".json";
     a.click();
 }
 

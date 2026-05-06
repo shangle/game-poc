@@ -41,23 +41,28 @@ A modular, web-based 3D retro game engine and visual level editor.
 
 ## 📋 Roadmap / TODO
 
-### 🐛 Bug Fixes
+### 🐛 Bug Fixes & Refactoring
+- [ ] **Tailwind Removal:** Strip out Tailwind classes and replace with clean, modern Vanilla CSS.
+- [ ] **PixUrl Fix:** Investigate and fix the failing PixUrl component load.
+- [ ] **UI Centralization:** Ensure all UI state changes route through `setUIMode`.
 - [ ] **Mouse Capture:** Further testing on Chromebook/Mouse to ensure Pointer Lock is consistent.
-- [ ] **Viewport Scaling:** Ensure Three.js canvas handles window resizing perfectly.
 
-### 🎨 Title Screen & UX
+### 🎨 UI/UX Redesign
+- [ ] **Modernization:** Redesign the interface to feel cleaner, sharper, modern, and fresh.
 - [x] **Polished Title Screen:** Added versioning, controls guide, and GitHub link.
-- [ ] **Control Configurator:** Allow users to remap movement/action keys. (Big Task)
 
-### 🛠 Editor Enhancements
+### 🛠 Editor Enhancements (Mario Maker Style)
 - [x] **Tool Clarity:** Added labels to the toolbar icons.
-- [ ] **Editor Modes:** 
-    - [ ] Easy Mode (Basic placement)
+- [ ] **Editor Modes:** Focus on making it simple for children, masterable for adults.
+    - [ ] Easy Mode (Simple interface, basic placement)
     - [ ] Normal Mode (Standard features)
     - [ ] Advanced Mode (Full JSON inspector & logic)
 
 ### 🚀 Advanced Features
 - [x] **Save/Load:** Implement LocalStorage persistence.
 - [ ] **Level Packs:** Support for multiple levels and sequencing.
+- [ ] **AI Patterns:** Add more complex enemy behaviors.
+- [ ] **Texture Library:** Expand the default asset set.
+and sequencing.
 - [ ] **AI Patterns:** Add more complex enemy behaviors.
 - [ ] **Texture Library:** Expand the default asset set.

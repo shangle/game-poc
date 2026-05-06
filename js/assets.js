@@ -36,13 +36,21 @@ function createAsset(type) {
     return c.toDataURL('image/png');
 }
 
-// Preload Procedural Assets directly into gameData if empty
+// Preload Procedural Assets directly into gamePack if empty
 function resolveAsset(texKey) {
-    if(gameData.assets[texKey]) return gameData.assets[texKey];
+    if(!texKey || texKey === 'none') return null;
+    if(gamePack.metadata.assets && gamePack.metadata.assets[texKey]) return gamePack.metadata.assets[texKey];
+    
+    // Check level-specific overrides first
+    const level = getActiveLevel();
+    if(level.assets && level.assets[texKey]) return level.assets[texKey];
+    
     const generated = createAsset(texKey);
-    gameData.assets[texKey] = generated;
+    if (!gamePack.metadata.assets) gamePack.metadata.assets = {};
+    gamePack.metadata.assets[texKey] = generated;
     return generated;
 }
 
 // Initial assets
-gameData.assets.gun = createAsset('gun');
+if (!gamePack.metadata.assets) gamePack.metadata.assets = {};
+gamePack.metadata.assets.gun = createAsset('gun');

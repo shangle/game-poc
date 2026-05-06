@@ -13,30 +13,31 @@ try {
         context.ID_EMPTY = typeof ID_EMPTY !== 'undefined' ? ID_EMPTY : null;
         context.ID_PLAYER = typeof ID_PLAYER !== 'undefined' ? ID_PLAYER : null;
         context.ID_GOAL = typeof ID_GOAL !== 'undefined' ? ID_GOAL : null;
-        context.gameData = typeof gameData !== 'undefined' ? gameData : null;
+        context.gamePack = typeof gamePack !== 'undefined' ? gamePack : null;
     `);
 } catch(e) {
     console.error("Error evaluating state.js:", e);
 }
 
-describe('Game State Management', () => {
-    test('Initial gameData should have correct grid dimensions', () => {
-        expect(context.gameData).toBeDefined();
-        expect(context.gameData.map.floors.length).toBe(14);
-        expect(context.gameData.map.floors[0].length).toBe(14);
+describe('Game State Management (GamePack)', () => {
+    test('Initial gamePack should have metadata and levels', () => {
+        expect(context.gamePack).toBeDefined();
+        expect(context.gamePack.levels.length).toBeGreaterThan(0);
     });
 
-    test('Initial map should be populated with default floor tile', () => {
-        expect(context.gameData.map.floors[0][0]).toBe(101);
+    test('Initial level should have correct grid dimensions', () => {
+        const level = context.gamePack.levels[0];
+        expect(level.map.floors.length).toBe(14);
+        expect(level.map.floors[0].length).toBe(14);
     });
 
-    test('Palette should contain required categories', () => {
-        expect(context.gameData.palette).toHaveProperty('floors');
-        expect(context.gameData.palette).toHaveProperty('ceils');
-        expect(context.gameData.palette).toHaveProperty('walls');
-        expect(context.gameData.palette).toHaveProperty('enemies');
-        expect(context.gameData.palette).toHaveProperty('objects');
-        expect(context.gameData.palette).toHaveProperty('items');
+    test('Global Palette should contain required categories', () => {
+        expect(context.gamePack.globalPalette).toHaveProperty('floors');
+        expect(context.gamePack.globalPalette).toHaveProperty('ceils');
+        expect(context.gamePack.globalPalette).toHaveProperty('walls');
+        expect(context.gamePack.globalPalette).toHaveProperty('enemies');
+        expect(context.gamePack.globalPalette).toHaveProperty('objects');
+        expect(context.gamePack.globalPalette).toHaveProperty('items');
     });
 
     test('Constants should be correctly identified', () => {

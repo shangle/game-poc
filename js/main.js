@@ -6,7 +6,8 @@ function setUIMode(mode) {
     const screens = {
         'TITLE': document.getElementById('boot-screen'),
         'EDITOR': document.getElementById('editor-sidebar'),
-        'GAME': document.getElementById('game-container')
+        'GAME': document.getElementById('game-container'),
+        'SEQUENCER': document.getElementById('sequencer-overlay')
     };
 
     // Hide all first
@@ -20,6 +21,7 @@ function setUIMode(mode) {
     if (active) {
         active.classList.remove('hidden');
         if (mode === 'TITLE') active.style.display = 'flex';
+        else if (mode === 'SEQUENCER') active.style.display = 'flex';
         else if (mode === 'GAME') active.style.display = 'block';
     }
 

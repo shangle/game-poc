@@ -5,7 +5,7 @@ test.describe('Retro Engine Studio E2E', () => {
     // Serve the local directory - in CI we might use a local server, 
     // but playwright can also load local files directly if configured,
     // or we can test the live URL. For this test, we'll test the local file.
-    await page.goto(`file://${process.cwd()}/index.html`);
+    await page.goto(`file://${process.cwd()}/launcher.html`);
   });
 
   test('Boot screen loads and displays title', async ({ page }) => {
@@ -13,16 +13,16 @@ test.describe('Retro Engine Studio E2E', () => {
     await expect(page.locator('#boot-screen')).toBeVisible();
   });
 
-  test('Clicking Play Game hides boot screen and shows game container', async ({ page }) => {
-    await page.click('text=PLAY GAME');
+  test('Clicking NEON BREACH hides boot screen and shows game container', async ({ page }) => {
+    await page.click('text=NEON BREACH');
     await expect(page.locator('#boot-screen')).toBeHidden();
     await expect(page.locator('#game-container')).toBeVisible();
   });
 
-  test('Clicking Open Builder hides boot screen and shows editor', async ({ page }) => {
+  test('Clicking BUILDER hides boot screen and shows editor', async ({ page }) => {
     // Reload page to reset state
     await page.reload();
-    await page.click('text=OPEN BUILDER');
+    await page.click('text=BUILDER');
     await expect(page.locator('#boot-screen')).toBeHidden();
     await expect(page.locator('#editor-sidebar')).toBeVisible();
     
