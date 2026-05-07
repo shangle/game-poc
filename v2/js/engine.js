@@ -142,6 +142,10 @@ class GameEngine {
             ctx.fillStyle = '#ffffff'; ctx.font = 'bold 18px sans-serif'; ctx.fillText('EXIT', 12, 38);
         } else if (type.includes('enemy')) {
             ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.fill();
+        } else if (type === 'gun') {
+            c.width = 256; c.height = 256;
+            ctx.fillStyle = '#374151'; ctx.fillRect(100, 150, 56, 150); 
+            ctx.fillStyle = '#6b7280'; ctx.fillRect(115, 50, 26, 150); ctx.fillStyle = '#000'; ctx.fillRect(123, 40, 10, 20);
         } else {
             ctx.fillStyle = '#334155'; ctx.fillRect(0, 0, 64, 64);
         }
@@ -149,6 +153,8 @@ class GameEngine {
     }
 
     buildWorld(level) {
+        if (!level || !level.map) return;
+
         // Clear scene
         this.scene.children = this.scene.children.filter(c => c.type === 'AmbientLight' || c.type === 'PerspectiveCamera');
         this.colliders = [];
@@ -189,12 +195,16 @@ class GameEngine {
         };
 
         for (let z = 0; z < GRID_SIZE; z++) {
+            const rowEntities = (level.map.entities && level.map.entities[z]) ? level.map.entities[z] : [];
+            const rowFloors = (level.map.floors && level.map.floors[z]) ? level.map.floors[z] : [];
+            const rowCeils = (level.map.ceils && level.map.ceils[z]) ? level.map.ceils[z] : [];
+
             for (let x = 0; x < GRID_SIZE; x++) {
                 const posX = x * TILE_SIZE;
                 const posZ = z * TILE_SIZE;
 
                 // Floor
-                const fId = level.map.floors[z][x];
+                const fId = rowFloors[x] || 0;
                 const fData = this.cartridge.palette.floors.find(i => i.id === fId);
                 if (fData) {
                     const mesh = new THREE.Mesh(planeGeo, getMat(fData.tex, 'floor'));
@@ -204,7 +214,7 @@ class GameEngine {
                 }
 
                 // Ceiling
-                const cId = level.map.ceils[z][x];
+                const cId = rowCeils[x] || 0;
                 const cData = this.cartridge.palette.ceils.find(i => i.id === cId);
                 if (cData) {
                     const mesh = new THREE.Mesh(planeGeo, getMat(cData.tex, 'ceil'));
@@ -214,7 +224,7 @@ class GameEngine {
                 }
 
                 // Entities
-                const eId = level.map.entities[z][x];
+                const eId = rowEntities[x] || 0;
                 if (eId === ID_PLAYER) {
                     this.camera.position.set(posX, WALL_HEIGHT / 2, posZ);
                 } else if (eId === ID_GOAL) {
@@ -325,6 +335,9 @@ class GameEngine {
 
     nextLevel() {
         const currentLevel = this.cartridge.levels[this.currentLevelIndex];
+        // Unlock next levels even if it's not the last one
+        document.dispatchEvent(new CustomEvent('level-clear', { detail: { index: this.currentLevelIndex } }));
+
         if (currentLevel.exits && currentLevel.exits.length > 0) {
             const nextLvlId = currentLevel.exits[0].targetLevel;
             const nextIndex = this.cartridge.levels.findIndex(l => l.id === nextLvlId);

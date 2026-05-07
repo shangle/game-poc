@@ -33,6 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
         gameEngine.startLevel(e.detail.index);
     });
 
+    document.addEventListener('level-clear', (e) => {
+        localStorage.setItem('retroQuest_unlocked', 'true');
+        checkLevelSelector();
+    });
+
     document.addEventListener('game-win', (e) => {
         localStorage.setItem('retroQuest_unlocked', 'true');
         checkLevelSelector();

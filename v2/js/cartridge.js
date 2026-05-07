@@ -26,13 +26,14 @@ const RetroQuestCartridge = {
             map: {
                 floors: Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(101)),
                 ceils: Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(201)),
-                entities: [
-                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-                    [1,0,99,0,0,0,0,0,0,0,0,0,98,0,1],
-                    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-                ]
+                entities: Array(GRID_SIZE).fill().map((_, z) => 
+                    Array(GRID_SIZE).fill(0).map((_, x) => {
+                        if (z === 0 || z === 4 || x === 0 || x === 15) return 1;
+                        if (z === 2 && x === 2) return 99;
+                        if (z === 2 && x === 13) return 98;
+                        return 0;
+                    })
+                )
             },
             exits: [{ targetLevel: "lvl_2" }]
         },
@@ -42,13 +43,15 @@ const RetroQuestCartridge = {
             map: {
                 floors: Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(101)),
                 ceils: Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(201)),
-                entities: [
-                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                    [1,99,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
-                    [1,0,0,0,0,0,1,0,10,0,0,0,98,0,1],
-                    [1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
-                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-                ]
+                entities: Array(GRID_SIZE).fill().map((_, z) => 
+                    Array(GRID_SIZE).fill(0).map((_, x) => {
+                        if (z === 0 || z === 4 || x === 0 || x === 15) return 1;
+                        if (z === 2 && x === 1) return 99;
+                        if (z === 2 && x === 8) return 10;
+                        if (z === 2 && x === 14) return 98;
+                        return 0;
+                    })
+                )
             },
             exits: [{ targetLevel: "lvl_3" }]
         },
@@ -85,15 +88,17 @@ const RetroQuestCartridge = {
             map: {
                 floors: Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(101)),
                 ceils: Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(201)),
-                entities: [
-                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                    [1,99,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
-                    [1,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1],
-                    [1,0,0,0,0,10,0,1,0,10,0,0,0,0,0,1],
-                    [1,0,0,1,0,0,0,0,0,0,0,1,0,30,0,1],
-                    [1,0,0,0,0,0,0,1,0,0,0,0,0,0,98,1],
-                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-                ]
+                entities: Array(GRID_SIZE).fill().map((_, z) => 
+                    Array(GRID_SIZE).fill(0).map((_, x) => {
+                        if (z === 0 || z === 6 || x === 0 || x === 15) return 1;
+                        if (z === 1 && x === 1) return 99;
+                        if (z === 3 && x === 5) return 10;
+                        if (z === 3 && x === 9) return 10;
+                        if (z === 5 && x === 14) return 98;
+                        if ((z === 2 || z === 4) && (x === 3 || x === 11)) return 1;
+                        return 0;
+                    })
+                )
             },
             exits: [{ targetLevel: "lvl_5" }]
         },
@@ -103,12 +108,16 @@ const RetroQuestCartridge = {
             map: {
                 floors: Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(101)),
                 ceils: Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(201)),
-                entities: [
-                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                    [1,99,0,0,1,10,1,10,1,10,1,0,0,0,1],
-                    [1,0,0,0,0,0,0,0,0,0,0,0,0,98,1],
-                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-                ]
+                entities: Array(GRID_SIZE).fill().map((_, z) => 
+                    Array(GRID_SIZE).fill(0).map((_, x) => {
+                        if (z === 0 || z === 3 || x === 0 || x === 15) return 1;
+                        if (z === 1 && x === 1) return 99;
+                        if (z === 1 && (x === 5 || x === 7 || x === 9)) return 10;
+                        if (z === 1 && (x === 4 || x === 6 || x === 8 || x === 10)) return 1;
+                        if (z === 2 && x === 13) return 98;
+                        return 0;
+                    })
+                )
             },
             exits: [{ targetLevel: "lvl_6" }]
         },
@@ -118,16 +127,17 @@ const RetroQuestCartridge = {
             map: {
                 floors: Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(101)),
                 ceils: Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(201)),
-                entities: [
-                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                    [1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1],
-                    [1,0,99,0,0,0,1,1,0,0,0,0,10,0,1],
-                    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-                    [1,1,1,0,0,0,1,1,0,0,0,1,1,1,0,1],
-                    [1,30,0,0,0,10,0,0,10,0,0,0,0,30,1],
-                    [1,1,1,1,1,1,1,1,1,1,1,1,1,98,1],
-                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-                ]
+                entities: Array(GRID_SIZE).fill().map((_, z) => 
+                    Array(GRID_SIZE).fill(0).map((_, x) => {
+                        if (z === 0 || z === 7 || x === 0 || x === 15) return 1;
+                        if (z === 2 && x === 2) return 99;
+                        if (z === 6 && x === 13) return 98;
+                        if ((z === 1 || z === 2 || z === 4) && (x === 6 || x === 7)) return 1;
+                        if (z === 5 && (x === 5 || x === 8)) return 10;
+                        if (z === 2 && x === 12) return 10;
+                        return 0;
+                    })
+                )
             },
             exits: [{ targetLevel: "lvl_7" }]
         },
@@ -137,11 +147,15 @@ const RetroQuestCartridge = {
             map: {
                 floors: Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(101)),
                 ceils: Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(201)),
-                entities: [
-                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                    [1,99,10,0,10,0,10,0,10,0,10,0,10,0,98,1],
-                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-                ]
+                entities: Array(GRID_SIZE).fill().map((_, z) => 
+                    Array(GRID_SIZE).fill(0).map((_, x) => {
+                        if (z === 0 || z === 2 || x === 0 || x === 15) return 1;
+                        if (z === 1 && x === 1) return 99;
+                        if (z === 1 && x === 14) return 98;
+                        if (z === 1 && x % 2 === 0 && x > 1 && x < 14) return 10;
+                        return 0;
+                    })
+                )
             },
             exits: []
         }
