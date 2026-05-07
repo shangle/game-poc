@@ -13,6 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
     gameEngine.init(gameContainer);
     gameEngine.loadCartridge(Cartridge);
 
+    const checkLevelSelector = () => {
+        if (localStorage.getItem('retroQuest_unlocked')) {
+            titleScreen.setAttribute('unlocked', 'true');
+        }
+    };
+    checkLevelSelector();
+
     // Event Listeners
     titleScreen.addEventListener('start-game', () => {
         titleScreen.classList.add('hidden');
@@ -20,7 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
         gameEngine.startLevel(0);
     });
 
+    titleScreen.addEventListener('select-level', (e) => {
+        titleScreen.classList.add('hidden');
+        hud.classList.remove('hidden');
+        gameEngine.startLevel(e.detail.index);
+    });
+
     document.addEventListener('game-win', (e) => {
+        localStorage.setItem('retroQuest_unlocked', 'true');
+        checkLevelSelector();
         hud.classList.add('hidden');
         winOverlay.classList.remove('hidden');
         document.getElementById('final-score').innerText = e.detail.score;

@@ -28,6 +28,7 @@ class GameEngine {
         this.keys = { w: false, a: false, s: false, d: false };
         this.currentLevelIndex = 0;
         this.cartridge = null;
+        this.raycaster = new THREE.Raycaster();
     }
 
     init(container) {
@@ -55,10 +56,41 @@ class GameEngine {
         document.addEventListener('keyup', (e) => this.keys[e.key.toLowerCase()] = false);
         
         container.addEventListener('click', () => {
-            if (this.active) container.requestPointerLock();
+            if (this.active) {
+                if (document.pointerLockElement) {
+                    this.shoot();
+                } else {
+                    container.requestPointerLock();
+                }
+            }
         });
 
         document.addEventListener('mousemove', (e) => this.onMouseMove(e));
+    }
+
+    shoot() {
+        const weapon = document.getElementById('weapon-container');
+        if (weapon) {
+            weapon.classList.add('firing');
+            setTimeout(() => weapon.classList.remove('firing'), 100);
+        }
+
+        this.raycaster.setFromCamera(new THREE.Vector2(0, 0), this.camera);
+        const targets = this.enemies.filter(e => e.active).map(e => e.mesh);
+        const intersects = this.raycaster.intersectObjects(targets);
+
+        if (intersects.length > 0) {
+            const hit = this.enemies.find(e => e.mesh === intersects[0].object);
+            if (hit) {
+                hit.hp -= 50;
+                if (hit.hp <= 0) {
+                    hit.active = false;
+                    this.scene.remove(hit.mesh);
+                    this.player.score += 100;
+                    this.updateHUD();
+                }
+            }
+        }
     }
 
     onResize() {
@@ -194,6 +226,7 @@ class GameEngine {
                 } else {
                     const wData = this.cartridge.palette.walls.find(i => i.id === eId);
                     const enData = this.cartridge.palette.enemies.find(i => i.id === eId);
+                    const iData = this.cartridge.palette.items.find(i => i.id === eId);
 
                     if (wData) {
                         const mesh = new THREE.Mesh(boxGeo, getMat(wData.tex, 'wall'));
@@ -206,6 +239,12 @@ class GameEngine {
                         sprite.position.set(posX, 3, posZ);
                         this.scene.add(sprite);
                         this.enemies.push({ mesh: sprite, hp: enData.hp, speed: enData.speed, active: true });
+                    } else if (iData) {
+                        const sprite = new THREE.Sprite(getSpriteMat(iData.tex, 'item'));
+                        sprite.scale.set(4, 4, 1);
+                        sprite.position.set(posX, 2, posZ);
+                        this.scene.add(sprite);
+                        this.items.push({ mesh: sprite, type: iData.type, value: iData.value, active: true });
                     }
                 }
             }
@@ -245,6 +284,16 @@ class GameEngine {
         if (this.goalMesh && this.camera.position.distanceTo(this.goalMesh.position) < 5) {
             this.nextLevel();
         }
+
+        // Item collection
+        this.items.forEach(item => {
+            if (item.active && this.camera.position.distanceTo(item.mesh.position) < 3) {
+                item.active = false;
+                this.scene.remove(item.mesh);
+                if (item.type === 'hp') this.player.hp = Math.min(100, this.player.hp + item.value);
+                this.updateHUD();
+            }
+        });
 
         // Enemies
         this.enemies.forEach(e => {
