@@ -112,7 +112,7 @@ game-title-screen {
     display: flex;
     justify-content: space-between;
     pointer-events: none;
-    z-index: 5;
+    z-index: 1000;
 }
 
 .hud-panel {

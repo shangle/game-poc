@@ -16,6 +16,7 @@ class GameEngine {
         this.colliders = [];
         this.enemies = [];
         this.items = [];
+        this.projectiles = [];
         this.goalMesh = null;
         
         this.player = {
@@ -25,10 +26,45 @@ class GameEngine {
             euler: new THREE.Euler(0, 0, 0, 'YXZ')
         };
 
+        this.settings = {
+            sensitivity: 0.002,
+            fov: 75
+        };
+
         this.keys = { w: false, a: false, s: false, d: false };
         this.currentLevelIndex = 0;
         this.cartridge = null;
         this.raycaster = new THREE.Raycaster();
+    }
+
+    loadCartridge(cartridge) {
+        this.cartridge = cartridge;
+        this.currentLevelIndex = 0;
+    }
+
+    startLevel(index) {
+        this.reset();
+        this.currentLevelIndex = index;
+        const level = this.cartridge.levels[index];
+        this.buildWorld(level);
+        this.active = true;
+        this.loop();
+    }
+
+    reset() {
+        this.active = false;
+        if (this.scene) {
+            this.projectiles.forEach(p => this.scene.remove(p.mesh));
+            this.enemies.forEach(e => this.scene.remove(e.mesh));
+            this.items.forEach(i => this.scene.remove(i.mesh));
+        }
+        this.projectiles = [];
+        this.enemies = [];
+        this.items = [];
+        this.colliders = [];
+        this.player.hp = 100;
+        this.player.score = 0;
+        this.updateHUD();
     }
 
     init(container) {
@@ -36,19 +72,18 @@ class GameEngine {
         this.scene.background = new THREE.Color(0x020617);
         this.scene.fog = new THREE.Fog(0x020617, 10, 100);
 
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera = new THREE.PerspectiveCamera(this.settings.fov, window.innerWidth / window.innerHeight, 0.1, 1000);
         
         this.renderer = new THREE.WebGLRenderer({ antialias: false });
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(this.renderer.domElement);
 
-        // GLOBAL LIGHTING
         const ambient = new THREE.AmbientLight(0xffffff, 0.8);
         this.scene.add(ambient);
         
         const pointLight = new THREE.PointLight(0xffffff, 1.0, 100);
-        this.camera.add(pointLight); // Point light follows camera
+        this.camera.add(pointLight);
         this.scene.add(this.camera);
 
         window.addEventListener('resize', () => this.onResize());
@@ -66,6 +101,29 @@ class GameEngine {
         });
 
         document.addEventListener('mousemove', (e) => this.onMouseMove(e));
+
+        // Set procedural gun art
+        const weaponImg = document.getElementById('weapon-sprite');
+        if (weaponImg) {
+             const gunData = this.createProceduralTexture('gun');
+             weaponImg.style.backgroundImage = `url(${gunData})`;
+             
+             // Try to load external gun if available, fallback is already set
+             const loader = new THREE.ImageLoader();
+             loader.load('https://shangle.me/game-poc/assets/gun.png', (image) => {
+                 weaponImg.style.backgroundImage = `url(${image.src})`;
+             }, undefined, (err) => console.log("Engine: Using procedural weapon art."));
+        }
+    }
+
+    onMouseMove(event) {
+        if (this.active && document.pointerLockElement) {
+            this.player.euler.setFromQuaternion(this.camera.quaternion);
+            this.player.euler.y -= event.movementX * this.settings.sensitivity;
+            this.player.euler.x -= event.movementY * this.settings.sensitivity;
+            this.player.euler.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.player.euler.x));
+            this.camera.quaternion.setFromEuler(this.player.euler);
+        }
     }
 
     shoot() {
@@ -75,6 +133,31 @@ class GameEngine {
             setTimeout(() => weapon.classList.remove('firing'), 100);
         }
 
+        // Projectile Visual (Laser Bolt)
+        const laserGeo = new THREE.CylinderGeometry(0.05, 0.05, 2, 8);
+        const laserMat = new THREE.MeshBasicMaterial({ color: 0x0ea5e9 });
+        const laser = new THREE.Mesh(laserGeo, laserMat);
+        
+        laser.rotation.x = Math.PI / 2; // Orient along Z
+        
+        // Offset starting position
+        laser.position.copy(this.camera.position);
+        
+        const direction = new THREE.Vector3(0, 0, -1);
+        direction.applyQuaternion(this.camera.quaternion);
+        
+        // Push slightly forward and down to align with weapon
+        laser.position.addScaledVector(direction, 1);
+        laser.position.y -= 1;
+        
+        // Match camera rotation
+        laser.quaternion.copy(this.camera.quaternion);
+        laser.rotateX(Math.PI / 2); // Re-orient cylinder to face forward
+        
+        this.projectiles.push({ mesh: laser, dir: direction, life: 100 });
+        this.scene.add(laser);
+
+        // Raycasting for damage
         this.raycaster.setFromCamera(new THREE.Vector2(0, 0), this.camera);
         const targets = this.enemies.filter(e => e.active).map(e => e.mesh);
         const intersects = this.raycaster.intersectObjects(targets);
@@ -93,33 +176,70 @@ class GameEngine {
         }
     }
 
-    onResize() {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.updateProjectionMatrix();
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-    }
+    update(delta) {
+        if (!this.active) return;
 
-    onMouseMove(event) {
-        if (this.active && document.pointerLockElement) {
-            this.player.euler.setFromQuaternion(this.camera.quaternion);
-            this.player.euler.y -= event.movementX * 0.002;
-            this.player.euler.x -= event.movementY * 0.002;
-            this.player.euler.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.player.euler.x));
-            this.camera.quaternion.setFromEuler(this.player.euler);
+        // Player movement
+        const move = new THREE.Vector3();
+        if (this.keys.w) move.z -= 1;
+        if (this.keys.s) move.z += 1;
+        if (this.keys.a) move.x -= 1;
+        if (this.keys.d) move.x += 1;
+
+        if (move.length() > 0) {
+            move.normalize().applyQuaternion(this.camera.quaternion);
+            move.y = 0;
+            move.multiplyScalar(0.6);
+
+            if (!this.checkCollision(this.camera.position.x + move.x, this.camera.position.z)) this.camera.position.x += move.x;
+            if (!this.checkCollision(this.camera.position.x, this.camera.position.z + move.z)) this.camera.position.z += move.z;
         }
-    }
 
-    loadCartridge(cartridge) {
-        this.cartridge = cartridge;
-        this.currentLevelIndex = 0;
-    }
+        // Projectiles
+        for (let i = this.projectiles.length - 1; i >= 0; i--) {
+            const p = this.projectiles[i];
+            p.mesh.position.addScaledVector(p.dir, 2.0);
+            p.life--;
+            if (p.life <= 0 || this.checkCollision(p.mesh.position.x, p.mesh.position.z, 0.5)) {
+                this.scene.remove(p.mesh);
+                this.projectiles.splice(i, 1);
+            }
+        }
 
-    startLevel(index) {
-        this.currentLevelIndex = index;
-        const level = this.cartridge.levels[index];
-        this.buildWorld(level);
-        this.active = true;
-        this.loop();
+        // Goal check
+        if (this.goalMesh && this.camera.position.distanceTo(this.goalMesh.position) < 5) {
+            this.nextLevel();
+        }
+
+        // Item collection
+        this.items.forEach(item => {
+            if (item.active && this.camera.position.distanceTo(item.mesh.position) < 3) {
+                item.active = false;
+                this.scene.remove(item.mesh);
+                if (item.type === 'hp') this.player.hp = Math.min(100, this.player.hp + item.value);
+                this.updateHUD();
+            }
+        });
+
+        // Enemies
+        this.enemies.forEach(e => {
+            if (!e.active) return;
+            const dir = new THREE.Vector3().subVectors(this.camera.position, e.mesh.position);
+            dir.y = 0;
+            if (dir.length() > 4) {
+                dir.normalize().multiplyScalar(e.speed);
+                const nx = e.mesh.position.x + dir.x;
+                const nz = e.mesh.position.z + dir.z;
+                if (!this.checkCollision(nx, nz, 2)) {
+                    e.mesh.position.x = nx;
+                    e.mesh.position.z = nz;
+                }
+            } else if (Math.random() < 0.02) {
+                this.player.hp -= 5;
+                this.updateHUD();
+                if (this.player.hp <= 0) this.gameOver();
+            }
+        });
     }
 
     createProceduralTexture(type) {
@@ -143,9 +263,9 @@ class GameEngine {
         } else if (type.includes('enemy')) {
             ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.fill();
         } else if (type === 'gun') {
-            c.width = 256; c.height = 256;
-            ctx.fillStyle = '#374151'; ctx.fillRect(100, 150, 56, 150); 
-            ctx.fillStyle = '#6b7280'; ctx.fillRect(115, 50, 26, 150); ctx.fillStyle = '#000'; ctx.fillRect(123, 40, 10, 20);
+            c.width = 128; c.height = 128;
+            ctx.fillStyle = '#374151'; ctx.fillRect(50, 75, 28, 75); 
+            ctx.fillStyle = '#6b7280'; ctx.fillRect(57, 25, 13, 75); ctx.fillStyle = '#000'; ctx.fillRect(61, 20, 5, 10);
         } else {
             ctx.fillStyle = '#334155'; ctx.fillRect(0, 0, 64, 64);
         }
@@ -160,6 +280,7 @@ class GameEngine {
         this.colliders = [];
         this.enemies = [];
         this.items = [];
+        this.projectiles = []; // Clear old projectiles
 
         const planeGeo = new THREE.PlaneGeometry(TILE_SIZE, TILE_SIZE);
         const boxGeo = new THREE.BoxGeometry(TILE_SIZE, WALL_HEIGHT, TILE_SIZE);
@@ -168,9 +289,8 @@ class GameEngine {
         const getMat = (url, type) => {
             const finalUrl = (url && url.startsWith('http')) ? url : this.createProceduralTexture(type);
             const tex = loader.load(finalUrl, 
-                undefined, // onLoad
-                undefined, // onProgress
-                () => { // onError - Fallback to procedural
+                undefined, undefined,
+                () => {
                     tex.image = new Image();
                     tex.image.src = this.createProceduralTexture(type);
                     tex.needsUpdate = true;
@@ -259,71 +379,6 @@ class GameEngine {
                 }
             }
         }
-    }
-
-    checkCollision(nx, nz, radius = 2) {
-        for (let c of this.colliders) {
-            if (c.type === 'box') {
-                const h = c.size / 2;
-                if (nx + radius > c.x - h && nx - radius < c.x + h && nz + radius > c.z - h && nz - radius < c.z + h) return true;
-            }
-        }
-        return false;
-    }
-
-    update(delta) {
-        if (!this.active) return;
-
-        // Player movement
-        const move = new THREE.Vector3();
-        if (this.keys.w) move.z -= 1;
-        if (this.keys.s) move.z += 1;
-        if (this.keys.a) move.x -= 1;
-        if (this.keys.d) move.x += 1;
-
-        if (move.length() > 0) {
-            move.normalize().applyQuaternion(this.camera.quaternion);
-            move.y = 0;
-            move.multiplyScalar(0.6);
-
-            if (!this.checkCollision(this.camera.position.x + move.x, this.camera.position.z)) this.camera.position.x += move.x;
-            if (!this.checkCollision(this.camera.position.x, this.camera.position.z + move.z)) this.camera.position.z += move.z;
-        }
-
-        // Goal check
-        if (this.goalMesh && this.camera.position.distanceTo(this.goalMesh.position) < 5) {
-            this.nextLevel();
-        }
-
-        // Item collection
-        this.items.forEach(item => {
-            if (item.active && this.camera.position.distanceTo(item.mesh.position) < 3) {
-                item.active = false;
-                this.scene.remove(item.mesh);
-                if (item.type === 'hp') this.player.hp = Math.min(100, this.player.hp + item.value);
-                this.updateHUD();
-            }
-        });
-
-        // Enemies
-        this.enemies.forEach(e => {
-            if (!e.active) return;
-            const dir = new THREE.Vector3().subVectors(this.camera.position, e.mesh.position);
-            dir.y = 0;
-            if (dir.length() > 4) {
-                dir.normalize().multiplyScalar(e.speed);
-                const nx = e.mesh.position.x + dir.x;
-                const nz = e.mesh.position.z + dir.z;
-                if (!this.checkCollision(nx, nz, 2)) {
-                    e.mesh.position.x = nx;
-                    e.mesh.position.z = nz;
-                }
-            } else if (Math.random() < 0.02) {
-                this.player.hp -= 5;
-                this.updateHUD();
-                if (this.player.hp <= 0) this.gameOver();
-            }
-        });
     }
 
     updateHUD() {
