@@ -116,6 +116,13 @@ class GameEngine {
         }
     }
 
+    onResize() {
+        if (!this.camera || !this.renderer) return;
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
     onMouseMove(event) {
         if (this.active && document.pointerLockElement) {
             this.player.euler.setFromQuaternion(this.camera.quaternion);
@@ -240,6 +247,16 @@ class GameEngine {
                 if (this.player.hp <= 0) this.gameOver();
             }
         });
+    }
+
+    checkCollision(nx, nz, radius = 2) {
+        for (let c of this.colliders) {
+            if (c.type === 'box') {
+                const h = c.size / 2;
+                if (nx + radius > c.x - h && nx - radius < c.x + h && nz + radius > c.z - h && nz - radius < c.z + h) return true;
+            }
+        }
+        return false;
     }
 
     createProceduralTexture(type) {
