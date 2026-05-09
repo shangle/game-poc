@@ -49,6 +49,14 @@
         </div>
     </div>
 
+    <!-- UI: Touch Controls -->
+    <div id="touch-controls" style="display: none; position: fixed; bottom: 2rem; left: 2rem; right: 2rem; justify-content: space-between; align-items: flex-end; z-index: 1001; pointer-events: none;">
+        <div id="joystick-base" style="width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; position: relative; pointer-events: auto; touch-action: none; border: 2px solid rgba(255,255,255,0.2);">
+            <div id="joystick-knob" style="width: 50px; height: 50px; background: #0ea5e9; border-radius: 50%; position: absolute; top: 35px; left: 35px; transition: transform 0.05s; box-shadow: 0 0 15px rgba(14, 165, 233, 0.5);"></div>
+        </div>
+        <button id="touch-fire-btn" style="width: 80px; height: 80px; background: rgba(244, 63, 94, 0.3); border: 4px solid #f43f5e; color: white; border-radius: 50%; font-weight: 900; text-transform: uppercase; font-size: 0.8rem; pointer-events: auto; touch-action: none; display: flex; align-items: center; justify-content: center; backdrop-blur: 5px;">Fire</button>
+    </div>
+
     <!-- UI: Win Overlay -->
     <div id="win-overlay" class="overlay hidden">
         <h2 class="title-text" style="color: #10b981;">VICTORY</h2>

@@ -32,15 +32,20 @@ class GameTitleScreen extends HTMLElement {
                 background: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
                 color: #f8fafc;
                 font-family: 'Inter', system-ui, sans-serif;
-                overflow-y: auto;
+                overflow: hidden;
             }
 
             .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
                 text-align: center;
                 animation: fadeIn 0.4s ease-out;
                 padding: 2rem;
                 width: 100%;
                 max-width: 400px;
+                height: 100%;
             }
 
             h1 {
@@ -74,40 +79,18 @@ class GameTitleScreen extends HTMLElement {
 
             .level-grid {
                 display: grid;
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr;
                 gap: 0.5rem;
-                margin-top: 1rem;
-                border-top: 1px solid rgba(255,255,255,0.1);
-                padding-top: 1rem;
-            }
-
-            .level-grid h3 {
-                grid-column: span 2;
-                font-size: 0.6rem;
-                text-transform: uppercase;
-                letter-spacing: 0.2em;
-                color: #64748b;
-                margin-bottom: 0.5rem;
-            }
-
-            .option-group {
-                text-align: left;
-                margin-bottom: 1.5rem;
-            }
-
-            .option-group label {
-                display: block;
-                font-size: 0.7rem;
-                font-weight: 900;
-                text-transform: uppercase;
-                color: #64748b;
-                margin-bottom: 0.5rem;
-            }
-
-            input[type="range"] {
                 width: 100%;
-                cursor: pointer;
+                max-height: 50vh;
+                overflow-y: auto;
+                padding-right: 0.5rem;
             }
+
+            /* Scrollbar styling */
+            .level-grid::-webkit-scrollbar { width: 4px; }
+            .level-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+            .level-grid::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 10px; }
 
             button {
                 appearance: none;
@@ -123,6 +106,7 @@ class GameTitleScreen extends HTMLElement {
                 transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
                 letter-spacing: 0.1em;
                 font-size: 0.8rem;
+                width: 100%;
             }
 
             button.primary {
@@ -157,33 +141,45 @@ class GameTitleScreen extends HTMLElement {
             }
         </style>
         <div class="container">
-            ${mode === 'title' ? this.renderMainMenu(unlocked) : this.renderOptionsMenu()}
+            ${this.renderContent(mode, unlocked)}
         </div>
         `;
 
         this.setupEvents();
     }
 
-    renderMainMenu(unlocked) {
-        const levelButtons = Cartridge.levels.map((lvl, index) => 
-            `<button class="lvl-btn" data-index="${index}">Lvl ${index + 1}: ${lvl.name}</button>`
-        ).join('');
+    renderContent(mode, unlocked) {
+        if (mode === 'title') return this.renderMainMenu(unlocked);
+        if (mode === 'levels') return this.renderLevelMenu();
+        return this.renderOptionsMenu();
+    }
 
+    renderMainMenu(unlocked) {
         return `
             <h1>RETRO<br>QUEST</h1>
             <div class="subtitle">A New Beginning</div>
             
             <div class="menu">
                 <button class="primary" id="start-btn">Start Game</button>
-                
-                ${unlocked ? `
+                ${unlocked ? `<button id="goto-levels-btn">Select Level</button>` : ''}
+                <button id="options-btn">Options</button>
+            </div>
+        `;
+    }
+
+    renderLevelMenu() {
+        const levelButtons = Cartridge.levels.map((lvl, index) => 
+            `<button class="lvl-btn" data-index="${index}">${index + 1}. ${lvl.name}</button>`
+        ).join('');
+
+        return `
+            <h1 style="font-size: 3rem;">LEVELS</h1>
+            <div class="subtitle">Select Area</div>
+            <div class="menu">
                 <div class="level-grid">
-                    <h3>Select Level</h3>
                     ${levelButtons}
                 </div>
-                ` : ''}
-                
-                <button id="options-btn">Options</button>
+                <button class="primary" id="back-to-main-btn" style="margin-top: 1rem;">Back</button>
             </div>
         `;
     }
@@ -194,13 +190,9 @@ class GameTitleScreen extends HTMLElement {
             <div class="subtitle">Customize Engine</div>
             
             <div class="menu">
-                <div class="option-group">
-                    <label>Mouse Sensitivity</label>
-                    <input type="range" id="sense-slider" min="0.0005" max="0.01" step="0.0005" value="${window.gameEngine.settings.sensitivity}">
-                </div>
-                <div class="option-group">
-                    <label>Field of View (FOV)</label>
-                    <input type="range" id="fov-slider" min="60" max="110" step="5" value="${window.gameEngine.settings.fov}">
+                <div style="text-align: left; margin-bottom: 1rem;">
+                    <label style="font-size: 0.7rem; font-weight: 900; color: #64748b; text-transform: uppercase;">Sensitivity</label>
+                    <input type="range" id="sense-slider" min="0.0005" max="0.01" step="0.0005" value="${window.gameEngine.settings.sensitivity}" style="width: 100%;">
                 </div>
                 <button class="primary" id="back-btn">Apply & Back</button>
             </div>
@@ -208,40 +200,23 @@ class GameTitleScreen extends HTMLElement {
     }
 
     setupEvents() {
-        const startBtn = this.shadowRoot.getElementById('start-btn');
-        if (startBtn) {
-            startBtn.onclick = () => {
-                console.log("Title Screen: Dispatching start-game");
-                this.dispatchEvent(new CustomEvent('start-game', { 
-                    bubbles: true, 
-                    composed: true 
-                }));
-            };
-        }
-
-        const optionsBtn = this.shadowRoot.getElementById('options-btn');
-        if (optionsBtn) {
-            optionsBtn.onclick = () => this.setAttribute('mode', 'options');
-        }
-
-        const backBtn = this.shadowRoot.getElementById('back-btn');
-        if (backBtn) {
-            backBtn.onclick = () => {
-                const sense = parseFloat(this.shadowRoot.getElementById('sense-slider').value);
-                const fov = parseInt(this.shadowRoot.getElementById('fov-slider').value);
+        const getById = (id) => this.shadowRoot.getElementById(id);
+        
+        if (getById('start-btn')) getById('start-btn').onclick = () => this.dispatchEvent(new CustomEvent('start-game', { bubbles: true, composed: true }));
+        if (getById('goto-levels-btn')) getById('goto-levels-btn').onclick = () => this.setAttribute('mode', 'levels');
+        if (getById('options-btn')) getById('options-btn').onclick = () => this.setAttribute('mode', 'options');
+        if (getById('back-to-main-btn')) getById('back-to-main-btn').onclick = () => this.setAttribute('mode', 'title');
+        
+        if (getById('back-btn')) {
+            getById('back-btn').onclick = () => {
+                const sense = parseFloat(getById('sense-slider').value);
                 window.gameEngine.settings.sensitivity = sense;
-                window.gameEngine.settings.fov = fov;
-                window.gameEngine.camera.fov = fov;
-                window.gameEngine.camera.updateProjectionMatrix();
                 this.setAttribute('mode', 'title');
             };
         }
 
         this.shadowRoot.querySelectorAll('.lvl-btn').forEach(btn => {
-            btn.onclick = () => {
-                console.log("Title Screen: Dispatching select-level", btn.dataset.index);
-                this.selectLevel(parseInt(btn.dataset.index));
-            };
+            btn.onclick = () => this.selectLevel(parseInt(btn.dataset.index));
         });
     }
 
