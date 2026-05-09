@@ -119,6 +119,8 @@ class GameTitleScreen extends HTMLElement {
                 font-size: 0.8rem;
                 border-radius: 0.5rem;
                 color: #0ea5e9;
+                width: 100%;
+                text-align: center;
             }
 
             .key-btn.active {
@@ -238,17 +240,19 @@ class GameTitleScreen extends HTMLElement {
     renderRebindMenu() {
         const keys = window.gameEngine.settings.keys;
         const items = [
+            { label: 'Strafe Left', id: 'left' },
+            { label: 'Strafe Right', id: 'right' },
             { label: 'Move Forward', id: 'up' },
             { label: 'Move Backward', id: 'down' },
-            { label: 'Turn Left', id: 'left' },
-            { label: 'Turn Right', id: 'right' },
+            { label: 'Turn Left', id: 'turnLeft' },
+            { label: 'Turn Right', id: 'turnRight' },
             { label: 'Shoot', id: 'shoot' }
         ];
 
         const html = items.map(item => `
             <div class="rebind-item">
                 <label>${item.label}</label>
-                <button class="key-btn" data-action="${item.id}">${keys[item.id].toUpperCase()}</button>
+                <button class="key-btn" data-action="${item.id}">${(keys[item.id] === ' ' ? 'SPACE' : keys[item.id]).toUpperCase()}</button>
             </div>
         `).join('');
 
@@ -289,9 +293,10 @@ class GameTitleScreen extends HTMLElement {
                 btn.innerText = "...";
                 btn.classList.add('active');
                 const onKey = (e) => {
+                    e.preventDefault();
                     const key = e.key.toLowerCase();
                     window.gameEngine.settings.keys[btn.dataset.action] = key;
-                    btn.innerText = key.toUpperCase();
+                    btn.innerText = (key === ' ' ? 'SPACE' : key).toUpperCase();
                     btn.classList.remove('active');
                     window.removeEventListener('keydown', onKey);
                 };

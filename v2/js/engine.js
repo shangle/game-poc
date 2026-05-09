@@ -34,6 +34,8 @@ class GameEngine {
                 down: 's',
                 left: 'a',
                 right: 'd',
+                turnLeft: 'q',
+                turnRight: 'e',
                 shoot: ' '
             }
         };
@@ -71,7 +73,7 @@ class GameEngine {
         this.colliders = [];
         this.player.hp = 100;
         this.player.score = 0;
-        this.keys = {}; // Clear active keys
+        this.keys = {};
         this.updateHUD();
     }
 
@@ -87,9 +89,7 @@ class GameEngine {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(this.renderer.domElement);
 
-        const ambient = new THREE.AmbientLight(0xffffff, 0.8);
-        this.scene.add(ambient);
-        
+        this.scene.add(new THREE.AmbientLight(0xffffff, 0.8));
         const pointLight = new THREE.PointLight(0xffffff, 1.0, 100);
         this.camera.add(pointLight);
         this.scene.add(this.camera);
@@ -115,16 +115,13 @@ class GameEngine {
 
         document.addEventListener('mousemove', (e) => this.onMouseMove(e));
 
-        // Set procedural gun art
         const weaponImg = document.getElementById('weapon-sprite');
         if (weaponImg) {
-             const gunData = this.createProceduralTexture('gun');
-             weaponImg.style.backgroundImage = `url(${gunData})`;
-             
+             weaponImg.style.backgroundImage = `url(${this.createProceduralTexture('gun')})`;
              const loader = new THREE.ImageLoader();
              loader.load('https://shangle.me/game-poc/assets/gun.png', (image) => {
                  weaponImg.style.backgroundImage = `url(${image.src})`;
-             }, undefined, (err) => console.log("Engine: Using procedural weapon art."));
+             }, undefined, () => {});
         }
     }
 
@@ -155,14 +152,11 @@ class GameEngine {
         const laserGeo = new THREE.CylinderGeometry(0.05, 0.05, 2, 8);
         const laserMat = new THREE.MeshBasicMaterial({ color: 0x0ea5e9 });
         const laser = new THREE.Mesh(laserGeo, laserMat);
-        
         laser.position.copy(this.camera.position);
         const direction = new THREE.Vector3(0, 0, -1);
         direction.applyQuaternion(this.camera.quaternion);
-        
         laser.position.addScaledVector(direction, 1);
         laser.position.y -= 1;
-        
         laser.quaternion.copy(this.camera.quaternion);
         laser.rotateX(Math.PI / 2);
         
@@ -172,16 +166,13 @@ class GameEngine {
         this.raycaster.setFromCamera(new THREE.Vector2(0, 0), this.camera);
         const targets = this.enemies.filter(e => e.active).map(e => e.mesh);
         const intersects = this.raycaster.intersectObjects(targets);
-
         if (intersects.length > 0) {
             const hit = this.enemies.find(e => e.mesh === intersects[0].object);
             if (hit) {
                 hit.hp -= 50;
                 if (hit.hp <= 0) {
-                    hit.active = false;
-                    this.scene.remove(hit.mesh);
-                    this.player.score += 100;
-                    this.updateHUD();
+                    hit.active = false; this.scene.remove(hit.mesh);
+                    this.player.score += 100; this.updateHUD();
                 }
             }
         }
@@ -190,27 +181,26 @@ class GameEngine {
     update(delta) {
         if (!this.active) return;
 
-        // Drive & Turn Movement
-        if (this.keys[this.settings.keys.up]) {
-            const move = new THREE.Vector3(0, 0, -0.6);
+        const move = new THREE.Vector3();
+        if (this.keys[this.settings.keys.up]) move.z -= 0.6;
+        if (this.keys[this.settings.keys.down]) move.z += 0.4;
+        if (this.keys[this.settings.keys.left]) move.x -= 0.5; // Strafe Left
+        if (this.keys[this.settings.keys.right]) move.x += 0.5; // Strafe Right
+
+        if (move.length() > 0) {
             move.applyQuaternion(this.camera.quaternion);
             move.y = 0;
             if (!this.checkCollision(this.camera.position.x + move.x, this.camera.position.z)) this.camera.position.x += move.x;
             if (!this.checkCollision(this.camera.position.x, this.camera.position.z + move.z)) this.camera.position.z += move.z;
         }
-        if (this.keys[this.settings.keys.down]) {
-            const move = new THREE.Vector3(0, 0, 0.4);
-            move.applyQuaternion(this.camera.quaternion);
-            move.y = 0;
-            if (!this.checkCollision(this.camera.position.x + move.x, this.camera.position.z)) this.camera.position.x += move.x;
-            if (!this.checkCollision(this.camera.position.x, this.camera.position.z + move.z)) this.camera.position.z += move.z;
-        }
-        if (this.keys[this.settings.keys.left]) {
+
+        // Turn Logic (Keyboard Q/E or Joystick)
+        if (this.keys[this.settings.keys.turnLeft]) {
             this.player.euler.setFromQuaternion(this.camera.quaternion);
             this.player.euler.y += 0.04;
             this.camera.quaternion.setFromEuler(this.player.euler);
         }
-        if (this.keys[this.settings.keys.right]) {
+        if (this.keys[this.settings.keys.turnRight]) {
             this.player.euler.setFromQuaternion(this.camera.quaternion);
             this.player.euler.y -= 0.04;
             this.camera.quaternion.setFromEuler(this.player.euler);
@@ -232,8 +222,7 @@ class GameEngine {
 
         this.items.forEach(item => {
             if (item.active && this.camera.position.distanceTo(item.mesh.position) < 3) {
-                item.active = false;
-                this.scene.remove(item.mesh);
+                item.active = false; this.scene.remove(item.mesh);
                 if (item.type === 'hp') this.player.hp = Math.min(100, this.player.hp + item.value);
                 this.updateHUD();
             }
@@ -248,12 +237,10 @@ class GameEngine {
                 const nx = e.mesh.position.x + dir.x;
                 const nz = e.mesh.position.z + dir.z;
                 if (!this.checkCollision(nx, nz, 2)) {
-                    e.mesh.position.x = nx;
-                    e.mesh.position.z = nz;
+                    e.mesh.position.x = nx; e.mesh.position.z = nz;
                 }
             } else if (Math.random() < 0.02) {
-                this.player.hp -= 5;
-                this.updateHUD();
+                this.player.hp -= 5; this.updateHUD();
                 if (this.player.hp <= 0) this.gameOver();
             }
         });
@@ -270,32 +257,24 @@ class GameEngine {
     }
 
     createProceduralTexture(type) {
-        const c = document.createElement('canvas');
-        const ctx = c.getContext('2d');
+        const c = document.createElement('canvas'); const ctx = c.getContext('2d');
         c.width = 64; c.height = 64;
-
         if (type.includes('wall')) {
-            ctx.fillStyle = '#4a5568'; ctx.fillRect(0, 0, 64, 64);
-            ctx.fillStyle = '#2d3748';
+            ctx.fillStyle = '#4a5568'; ctx.fillRect(0, 0, 64, 64); ctx.fillStyle = '#2d3748';
             for (let i = 0; i < 64; i += 16) for (let j = 0; j < 64; j += 8) ctx.fillRect(i + 1, j + 1, 14, 6);
         } else if (type.includes('floor')) {
             ctx.fillStyle = '#2d3748'; ctx.fillRect(0, 0, 64, 64);
             ctx.fillStyle = '#1a202c'; ctx.fillRect(0, 0, 32, 32); ctx.fillRect(32, 32, 32, 32);
         } else if (type.includes('ceil')) {
-            ctx.fillStyle = '#111827'; ctx.fillRect(0, 0, 64, 64);
-            ctx.fillStyle = '#ffffff'; ctx.fillRect(10, 10, 2, 2); ctx.fillRect(40, 50, 2, 2);
+            ctx.fillStyle = '#111827'; ctx.fillRect(0, 0, 64, 64); ctx.fillStyle = '#ffffff'; ctx.fillRect(10, 10, 2, 2); ctx.fillRect(40, 50, 2, 2);
         } else if (type === 'goal') {
-            ctx.fillStyle = '#22c55e'; ctx.fillRect(0, 0, 64, 64);
-            ctx.fillStyle = '#ffffff'; ctx.font = 'bold 18px sans-serif'; ctx.fillText('EXIT', 12, 38);
+            ctx.fillStyle = '#22c55e'; ctx.fillRect(0, 0, 64, 64); ctx.fillStyle = '#ffffff'; ctx.font = 'bold 18px sans-serif'; ctx.fillText('EXIT', 12, 38);
         } else if (type.includes('enemy')) {
             ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.fill();
         } else if (type === 'gun') {
-            c.width = 128; c.height = 128;
-            ctx.fillStyle = '#374151'; ctx.fillRect(50, 75, 28, 75); 
+            c.width = 128; c.height = 128; ctx.fillStyle = '#374151'; ctx.fillRect(50, 75, 28, 75); 
             ctx.fillStyle = '#6b7280'; ctx.fillRect(57, 25, 13, 75); ctx.fillStyle = '#000'; ctx.fillRect(61, 20, 5, 10);
-        } else {
-            ctx.fillStyle = '#334155'; ctx.fillRect(0, 0, 64, 64);
-        }
+        } else { ctx.fillStyle = '#334155'; ctx.fillRect(0, 0, 64, 64); }
         return c.toDataURL();
     }
 
@@ -311,16 +290,14 @@ class GameEngine {
             const tex = loader.load(finalUrl, undefined, undefined, () => {
                 tex.image = new Image(); tex.image.src = this.createProceduralTexture(type); tex.needsUpdate = true;
             });
-            tex.magFilter = THREE.NearestFilter;
-            return new THREE.MeshLambertMaterial({ map: tex });
+            tex.magFilter = THREE.NearestFilter; return new THREE.MeshLambertMaterial({ map: tex });
         };
         const getSpriteMat = (url, type) => {
             const finalUrl = (url && url.startsWith('http')) ? url : this.createProceduralTexture(type);
             const tex = loader.load(finalUrl, undefined, undefined, () => {
                 tex.image = new Image(); tex.image.src = this.createProceduralTexture(type); tex.needsUpdate = true;
             });
-            tex.magFilter = THREE.NearestFilter;
-            return new THREE.SpriteMaterial({ map: tex });
+            tex.magFilter = THREE.NearestFilter; return new THREE.SpriteMaterial({ map: tex });
         };
         for (let z = 0; z < GRID_SIZE; z++) {
             const rowEntities = (level.map.entities && level.map.entities[z]) ? level.map.entities[z] : [];
