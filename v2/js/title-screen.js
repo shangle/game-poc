@@ -45,7 +45,7 @@ class GameTitleScreen extends HTMLElement {
                 padding: 2rem;
                 width: 100%;
                 max-width: 400px;
-                height: 100%;
+                margin: auto;
             }
 
             h1 {
@@ -82,15 +82,49 @@ class GameTitleScreen extends HTMLElement {
                 grid-template-columns: 1fr;
                 gap: 0.5rem;
                 width: 100%;
-                max-height: 50vh;
+                max-height: 40vh;
                 overflow-y: auto;
                 padding-right: 0.5rem;
             }
 
-            /* Scrollbar styling */
             .level-grid::-webkit-scrollbar { width: 4px; }
             .level-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
             .level-grid::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 10px; }
+
+            .rebind-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+                text-align: left;
+                margin-bottom: 2rem;
+            }
+
+            .rebind-item {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .rebind-item label {
+                font-size: 0.6rem;
+                text-transform: uppercase;
+                color: #64748b;
+                font-weight: 900;
+            }
+
+            .key-btn {
+                background: #0f172a;
+                border: 1px solid #1e293b;
+                padding: 0.5rem;
+                font-size: 0.8rem;
+                border-radius: 0.5rem;
+                color: #0ea5e9;
+            }
+
+            .key-btn.active {
+                border-color: #0ea5e9;
+                box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+            }
 
             button {
                 appearance: none;
@@ -151,7 +185,8 @@ class GameTitleScreen extends HTMLElement {
     renderContent(mode, unlocked) {
         if (mode === 'title') return this.renderMainMenu(unlocked);
         if (mode === 'levels') return this.renderLevelMenu();
-        return this.renderOptionsMenu();
+        if (mode === 'options') return this.renderOptionsMenu();
+        if (mode === 'rebind') return this.renderRebindMenu();
     }
 
     renderMainMenu(unlocked) {
@@ -187,15 +222,43 @@ class GameTitleScreen extends HTMLElement {
     renderOptionsMenu() {
         return `
             <h1 style="font-size: 3rem;">OPTIONS</h1>
-            <div class="subtitle">Customize Engine</div>
+            <div class="subtitle">Configure</div>
             
             <div class="menu">
                 <div style="text-align: left; margin-bottom: 1rem;">
-                    <label style="font-size: 0.7rem; font-weight: 900; color: #64748b; text-transform: uppercase;">Sensitivity</label>
+                    <label style="font-size: 0.6rem; font-weight: 900; color: #64748b; text-transform: uppercase;">Sensitivity</label>
                     <input type="range" id="sense-slider" min="0.0005" max="0.01" step="0.0005" value="${window.gameEngine.settings.sensitivity}" style="width: 100%;">
                 </div>
-                <button class="primary" id="back-btn">Apply & Back</button>
+                <button id="rebind-btn">Remap Keys</button>
+                <button class="primary" id="back-btn">Save & Back</button>
             </div>
+        `;
+    }
+
+    renderRebindMenu() {
+        const keys = window.gameEngine.settings.keys;
+        const items = [
+            { label: 'Move Forward', id: 'up' },
+            { label: 'Move Backward', id: 'down' },
+            { label: 'Turn Left', id: 'left' },
+            { label: 'Turn Right', id: 'right' },
+            { label: 'Shoot', id: 'shoot' }
+        ];
+
+        const html = items.map(item => `
+            <div class="rebind-item">
+                <label>${item.label}</label>
+                <button class="key-btn" data-action="${item.id}">${keys[item.id].toUpperCase()}</button>
+            </div>
+        `).join('');
+
+        return `
+            <h1 style="font-size: 3rem;">KEYS</h1>
+            <div class="subtitle">Tap to change</div>
+            <div class="rebind-grid">
+                ${html}
+            </div>
+            <button class="primary" id="back-to-options-btn">Done</button>
         `;
     }
 
@@ -205,7 +268,9 @@ class GameTitleScreen extends HTMLElement {
         if (getById('start-btn')) getById('start-btn').onclick = () => this.dispatchEvent(new CustomEvent('start-game', { bubbles: true, composed: true }));
         if (getById('goto-levels-btn')) getById('goto-levels-btn').onclick = () => this.setAttribute('mode', 'levels');
         if (getById('options-btn')) getById('options-btn').onclick = () => this.setAttribute('mode', 'options');
+        if (getById('rebind-btn')) getById('rebind-btn').onclick = () => this.setAttribute('mode', 'rebind');
         if (getById('back-to-main-btn')) getById('back-to-main-btn').onclick = () => this.setAttribute('mode', 'title');
+        if (getById('back-to-options-btn')) getById('back-to-options-btn').onclick = () => this.setAttribute('mode', 'options');
         
         if (getById('back-btn')) {
             getById('back-btn').onclick = () => {
@@ -217,6 +282,21 @@ class GameTitleScreen extends HTMLElement {
 
         this.shadowRoot.querySelectorAll('.lvl-btn').forEach(btn => {
             btn.onclick = () => this.selectLevel(parseInt(btn.dataset.index));
+        });
+
+        this.shadowRoot.querySelectorAll('.key-btn').forEach(btn => {
+            btn.onclick = () => {
+                btn.innerText = "...";
+                btn.classList.add('active');
+                const onKey = (e) => {
+                    const key = e.key.toLowerCase();
+                    window.gameEngine.settings.keys[btn.dataset.action] = key;
+                    btn.innerText = key.toUpperCase();
+                    btn.classList.remove('active');
+                    window.removeEventListener('keydown', onKey);
+                };
+                window.addEventListener('keydown', onKey);
+            };
         });
     }
 

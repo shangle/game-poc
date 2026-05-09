@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gameEngine.init(gameContainer);
     gameEngine.loadCartridge(Cartridge);
 
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    let touchActive = false;
 
     const checkLevelSelector = () => {
         if (localStorage.getItem('retroQuest_unlocked')) {
@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const showInGameUI = () => {
         if (hud) hud.style.display = 'flex';
-        if (isTouch && touchControls) touchControls.style.display = 'flex';
+        // Only show touch controls if we've detected actual touch interaction
+        if (touchActive && touchControls) touchControls.style.display = 'flex';
     };
 
     const hideInGameUI = () => {
@@ -82,8 +83,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Global touch detection
+    window.addEventListener('touchstart', () => {
+        if (!touchActive) {
+            touchActive = true;
+            if (gameEngine.active) showInGameUI();
+        }
+    }, { once: true });
+
     // Touch Support Logic
-    if (isTouch && touchControls) {
+    if (touchControls) {
         const base = document.getElementById('joystick-base');
         const knob = document.getElementById('joystick-knob');
         const fireBtn = document.getElementById('touch-fire-btn');
@@ -102,11 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const ly = Math.sin(angle) * dist;
             knob.style.transform = `translate(${lx}px, ${ly}px)`;
             
-            // Map to movement
-            gameEngine.keys.w = dy < -15;
-            gameEngine.keys.s = dy > 15;
-            gameEngine.keys.a = dx < -15;
-            gameEngine.keys.d = dx > 15;
+            // Map to movement: Forward/Backward + Turn (Drive Style)
+            gameEngine.keys[gameEngine.settings.keys.up] = dy < -15;
+            gameEngine.keys[gameEngine.settings.keys.down] = dy > 15;
+            gameEngine.keys[gameEngine.settings.keys.left] = dx < -15;
+            gameEngine.keys[gameEngine.settings.keys.right] = dx > 15;
         };
 
         base.addEventListener('touchstart', handleTouch);
@@ -116,7 +125,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         base.addEventListener('touchend', () => {
             knob.style.transform = 'translate(0,0)';
-            gameEngine.keys.w = gameEngine.keys.a = gameEngine.keys.s = gameEngine.keys.d = false;
+            gameEngine.keys[gameEngine.settings.keys.up] = false;
+            gameEngine.keys[gameEngine.settings.keys.down] = false;
+            gameEngine.keys[gameEngine.settings.keys.left] = false;
+            gameEngine.keys[gameEngine.settings.keys.right] = false;
         });
 
         fireBtn.addEventListener('touchstart', (e) => {
