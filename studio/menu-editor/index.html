@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Studio - Menu Editor</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="studio-title">Retro Studio // Menu Editor</div>
+        <div style="display: flex; gap: 1rem;">
+            <button class="btn" id="import-btn" style="background: var(--studio-card); color: var(--studio-text); border: 1px solid var(--studio-border);">Import JSON</button>
+            <button class="btn btn-success" id="export-btn">Export JSON</button>
+        </div>
+        <input type="file" id="import-file" style="display: none;" accept=".json">
+    </header>
+
+    <main>
+        <aside id="editor-panel">
+            <div class="field-group">
+                <label for="game-title">Game Title</label>
+                <input type="text" id="game-title" placeholder="e.g. Dungeon Crawler">
+            </div>
+
+            <div class="field-group">
+                <label for="game-version">Version</label>
+                <input type="text" id="game-version" placeholder="1.0.0">
+            </div>
+
+            <div class="field-group">
+                <label for="game-author">Author</label>
+                <input type="text" id="game-author" placeholder="Your Name">
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--studio-border); margin: 2rem 0;">
+
+            <div class="field-group">
+                <label>Background Gradient</label>
+                <div class="color-grid">
+                    <div>
+                        <label style="font-size: 0.5rem;">Start</label>
+                        <input type="color" id="color-bg-start">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.5rem;">End</label>
+                        <input type="color" id="color-bg-end">
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label>Text Color</label>
+                <input type="color" id="color-text">
+            </div>
+
+            <div class="field-group">
+                <label>Accent Color</label>
+                <input type="color" id="color-accent">
+            </div>
+        </aside>
+
+        <section id="preview-panel">
+            <div class="preview-container">
+                <studio-preview id="title-preview"></studio-preview>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/menu-editor.js"></script>
+</body>
+</html>

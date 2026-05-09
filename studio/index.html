@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Studio - Dashboard</title>
+    <style>
+        :root {
+            --bg: #020617;
+            --card: #0f172a;
+            --text: #f8fafc;
+            --accent: #0ea5e9;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 { font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2rem; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 250px);
+            gap: 1.5rem;
+        }
+        .tool-card {
+            background: var(--card);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .tool-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.2);
+        }
+        .tool-card.disabled { opacity: 0.4; pointer-events: none; }
+        .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .title { font-weight: 900; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.1em; color: var(--accent); }
+        .desc { font-size: 0.7rem; color: #64748b; font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <h1>RETRO STUDIO</h1>
+
+    <div class="grid">
+        <a href="menu-editor/index.html" class="tool-card">
+            <div class="icon">🖼️</div>
+            <div class="title">Menu Editor</div>
+            <div class="desc">Setup game metadata and title screen themes.</div>
+        </a>
+
+        <div class="tool-card disabled">
+            <div class="icon">🎨</div>
+            <div class="title">Palette Selector</div>
+            <div class="desc">Define walls, enemies, and items. (Phase 2)</div>
+        </div>
+
+        <div class="tool-card disabled">
+            <div class="icon">🧱</div>
+            <div class="title">Level Editor</div>
+            <div class="desc">Design maps and place entities. (Phase 3)</div>
+        </div>
+
+        <div class="tool-card disabled">
+            <div class="icon">🔗</div>
+            <div class="title">Sequencer</div>
+            <div class="desc">Connect levels into a complete journey. (Phase 4)</div>
+        </div>
+    </div>
+
+</body>
+</html>

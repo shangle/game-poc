@@ -1,0 +1,113 @@
+:root {
+    --studio-bg: #0f172a;
+    --studio-card: #1e293b;
+    --studio-border: rgba(255, 255, 255, 0.1);
+    --studio-text: #f8fafc;
+    --studio-accent: #0ea5e9;
+    --studio-success: #10b981;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background-color: var(--studio-bg);
+    color: var(--studio-text);
+    font-family: 'Inter', system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+header {
+    padding: 1rem 2rem;
+    background: rgba(15, 23, 42, 0.8);
+    border-bottom: 1px solid var(--studio-border);
+    backdrop-blur: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.studio-title {
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 0.8rem;
+    color: var(--studio-accent);
+}
+
+main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    overflow: hidden;
+}
+
+#editor-panel {
+    background: var(--studio-card);
+    border-right: 1px solid var(--studio-border);
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+#preview-panel {
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
+}
+
+.field-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+input[type="text"], input[type="color"] {
+    width: 100%;
+    padding: 0.75rem;
+    background: #0f172a;
+    border: 1px solid var(--studio-border);
+    border-radius: 0.5rem;
+    color: white;
+    font-family: inherit;
+}
+
+.color-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.btn-primary { background: var(--studio-accent); color: white; }
+.btn-success { background: var(--studio-success); color: white; }
+
+.preview-container {
+    width: 320px;
+    height: 568px;
+    border: 8px solid #334155;
+    border-radius: 2rem;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
