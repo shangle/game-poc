@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Engine Studio 3.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/studio.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js"
+        }
+    }
+    </script>
+</head>
+<body>
+
+    <div id="app-container">
+        <!-- TOP HEADER NAVBAR -->
+        <header>
+            <div class="logo-badge">
+                🕹️ RETRO STUDIO <span class="text-xs border border-blue-400 px-2 py-0.5 rounded-full ml-1" style="font-size:10px; color:#38bdf8; border:1px solid #38bdf8; border-radius:99px; padding:2px 8px;">v3.0</span>
+            </div>
+
+            <!-- LEVEL STAGE TABS -->
+            <div class="level-tabs" id="level-tabs-container">
+                <div class="level-tab active" data-index="0">Stage 1</div>
+                <button id="add-level-btn" class="level-tab" style="background:transparent; border:none; color:#38bdf8;">+ New Stage</button>
+            </div>
+
+            <!-- GLOBAL ACTIONS -->
+            <div class="flex gap-2" style="display:flex; gap:8px;">
+                <button id="btn-playtest" class="btn btn-success">► PLAYTEST (P)</button>
+                <button id="btn-share-url" class="btn btn-primary">🔗 SHARE URL</button>
+                <button id="btn-export-json" class="btn btn-secondary">💾 SAVE FILE</button>
+                <button id="btn-import-json" class="btn btn-secondary">📂 LOAD FILE</button>
+            </div>
+        </header>
+
+        <!-- MAIN WORKSPACE -->
+        <main>
+            <!-- TOOLBAR SIDEBAR -->
+            <div id="toolbar">
+                <div class="tool-btn active" id="tool-brush" title="Brush (B)">
+                    ✏️ <span class="tool-label">Brush</span>
+                </div>
+                <div class="tool-btn" id="tool-box-fill" title="Box Fill (F)">
+                    🔲 <span class="tool-label">Box Fill</span>
+                </div>
+                <div class="tool-btn" id="tool-line" title="Line (L)">
+                    📏 <span class="tool-label">Line</span>
+                </div>
+                <div class="tool-btn" id="tool-eyedropper" title="Eyedropper (I)">
+                    🧪 <span class="tool-label">Picker</span>
+                </div>
+                <div class="tool-btn" id="tool-eraser" title="Eraser (E)">
+                    🧹 <span class="tool-label">Eraser</span>
+                </div>
+                <div style="height:1px; background:#1e293b; width:80%; margin:4px 0;"></div>
+                <div class="tool-btn" id="tool-undo" title="Undo (Ctrl+Z)">
+                    ⟲ <span class="tool-label">Undo</span>
+                </div>
+                <div class="tool-btn" id="tool-redo" title="Redo (Ctrl+Y)">
+                    ⟳ <span class="tool-label">Redo</span>
+                </div>
+            </div>
+
+            <!-- DUAL VIEWPORTS AREA -->
+            <div id="viewports-container">
+                <!-- 2D GRID EDITING CANVAS -->
+                <div class="viewport-panel">
+                    <div class="viewport-header">2D MAP EDITOR</div>
+                    <canvas id="grid-canvas" width="512" height="512" style="max-width:90%; max-height:90%; border-radius:12px; border:2px solid #1e293b; cursor:crosshair;"></canvas>
+                </div>
+
+                <!-- REAL-TIME 3D WEBGL VIEWPORT -->
+                <div class="viewport-panel" id="view3d-container">
+                    <div class="viewport-header">REAL-TIME 3D PREVIEW</div>
+                </div>
+            </div>
+
+            <!-- RIGHT ASSET PALETTE PANEL -->
+            <div id="asset-panel">
+                <!-- LAYER TABS -->
+                <div class="flex gap-1 mb-3" style="display:flex; gap:4px; margin-bottom:12px;">
+                    <button class="btn btn-secondary active" id="layer-entities" style="flex:1; font-size:0.75rem;">👾 Entities</button>
+                    <button class="btn btn-secondary" id="layer-floors" style="flex:1; font-size:0.75rem;">🧱 Floors</button>
+                    <button class="btn btn-secondary" id="layer-ceils" style="flex:1; font-size:0.75rem;">🌌 Ceilings</button>
+                </div>
+
+                <div class="flex justify-between items-center mb-2" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <div style="font-size:0.75rem; font-weight:900; color:#94a3b8; text-transform:uppercase;">Asset Library</div>
+                    <button id="create-custom-asset-btn" class="btn btn-primary" style="padding:4px 10px; font-size:0.7rem;">+ Custom</button>
+                </div>
+
+                <!-- ASSET CARDS GRID -->
+                <div class="asset-cards-grid" id="asset-cards-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- PIXEL ART EDITOR MODAL CONTAINER -->
+    <div id="pixel-editor-container" class="modal-overlay hidden"></div>
+
+    <!-- IN-EDITOR PLAYTEST OVERLAY CONTAINER -->
+    <div id="playtest-container" class="modal-overlay hidden"></div>
+
+    <!-- MAIN SCRIPT ENTRY -->
+    <script type="module" src="js/main.js"></script>
+
+</body>
+</html>

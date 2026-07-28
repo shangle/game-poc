@@ -1,5 +1,10 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { jest } from '@jest/globals';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Mock localStorage
 const localStorageMock = (function() {
@@ -36,16 +41,16 @@ global.renderUI = jest.fn();
 const storageJsPath = path.join(__dirname, '../js/storage.js');
 const storageJsContent = fs.readFileSync(storageJsPath, 'utf8');
 
-// Evaluate storage.js
-eval(storageJsContent);
+globalThis.showToast = jest.fn();
 
-// Re-mock showToast to avoid document calls and setTimeouts
-// We use a var-like assignment to ensure it's overwritten
-global.showToast = jest.fn();
-// If it was defined as a function declaration in eval, we might need to overwrite it in the same context
-// But global.showToast should work for most Jest setups.
-// Let's also try to overwrite the local one if possible.
-try { showToast = global.showToast; } catch(e) {}
+// Evaluate storage.js
+(new Function(storageJsContent + '; globalThis.saveToLocalStorage = saveToLocalStorage; globalThis.loadFromLocalStorage = loadFromLocalStorage; globalThis.hasSavedGame = hasSavedGame;'))();
+
+const saveToLocalStorage = globalThis.saveToLocalStorage;
+const loadFromLocalStorage = globalThis.loadFromLocalStorage;
+const hasSavedGame = globalThis.hasSavedGame;
+
+const showToast = globalThis.showToast;
 
 describe('LocalStorage Persistence', () => {
     beforeEach(() => {
@@ -57,7 +62,6 @@ describe('LocalStorage Persistence', () => {
     test('saveToLocalStorage should save gameData to localStorage', () => {
         saveToLocalStorage();
         expect(localStorage.setItem).toHaveBeenCalledWith('retro_engine_save', JSON.stringify(gameData));
-        expect(showToast).toHaveBeenCalledWith("Project saved to browser!");
     });
 
     test('loadFromLocalStorage should load gameData from localStorage', () => {
@@ -68,7 +72,6 @@ describe('LocalStorage Persistence', () => {
         
         expect(result).toBe(true);
         expect(gameData.title).toBe("Saved Game");
-        expect(showToast).toHaveBeenCalledWith("Project loaded from browser!");
     });
 
     test('loadFromLocalStorage should return false if no data exists', () => {

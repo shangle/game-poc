@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 // Mock the DOM for testing
 document.body.innerHTML = `
